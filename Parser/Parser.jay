@@ -17,7 +17,8 @@ namespace Gone.Parser
 		
 %}
 
-%token IDENTIFIER TYPE_IDENTIFIER INTEGER_LITERAL FLOATING_LITERAL RUNE_LITERAL STRING_LITERAL
+%token IDENTIFIER TYPE_IDENTIFIER PACKAGE_IDENTIFIER
+%token INTEGER_LITERAL FLOATING_LITERAL RUNE_LITERAL STRING_LITERAL
 
 %token BREAK        DEFAULT      FUNC         INTERFACE    SELECT
 %token CASE         DEFER        GO           MAP          STRUCT
@@ -60,6 +61,7 @@ import_spec_list
 
 import_spec
     : package_name_list import_path
+    | import_path
     ;
 
 import_path
@@ -72,7 +74,7 @@ package_name_list
     ;
 
 package_name
-    : IDENTIFIER
+    : PACKAGE_IDENTIFIER
     ;
 
 top_level_decl_list
@@ -154,6 +156,34 @@ unary_expr
 
 primary_expr
     : primary_expr arguments
+    | primary_expr selector
+    | operand
+    ;
+
+operand
+    : literal
+    | operand_name
+    ;
+
+operand_name
+    : IDENTIFIER
+    | qualified_ident
+    ;
+
+qualified_ident
+    : package_name '.' IDENTIFIER
+    ;
+
+literal
+    : basic_literal
+    ;
+
+basic_literal
+    : STRING_LITERAL
+    ;
+
+selector
+    : '.' IDENTIFIER
     ;
 
 arguments

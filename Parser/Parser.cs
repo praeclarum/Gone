@@ -21,8 +21,8 @@ namespace Gone.Parser
             catch (yyParser.yyException ex)
             {
                 var index = lexer.CurrentIndex;
-                var startIndex = Math.Max (0, index);
-                var endIndex = Math.Min(code.Length, index + 50);
+                var startIndex = Math.Max (0, index - 10);
+                var endIndex = Math.Min(code.Length, index + 10);
                 var subcode = code.Substring(startIndex, endIndex - startIndex);
                 throw new Exception($"Bad syntax near:\n{subcode}", ex);
             }

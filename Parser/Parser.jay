@@ -1,0 +1,53 @@
+%{
+
+using System;
+
+
+#nullable disable
+
+namespace Gone.Parser
+{
+	/// <summary>
+	///    The Go Parser
+	///    https://golang.org/ref/spec#Pointer_types
+	/// </summary>
+	public partial class GoParser
+	{
+
+		
+%}
+
+%token IDENTIFIER INTEGER_LITERAL FLOATING_LITERAL RUNE_LITERAL STRING_LITERAL
+
+%token BREAK        DEFAULT      FUNC         INTERFACE    SELECT
+%token CASE         DEFER        GO           MAP          STRUCT
+%token CHAN         ELSE         GOTO         PACKAGE      SWITCH
+%token CONST        FALLTHROUGH  IF           RANGE        TYPE
+%token CONTINUE     FOR          IMPORT       RETURN       VAR
+
+
+
+%start translation_unit
+%%
+
+
+translation_unit
+    : top_level_decl_list
+    ;
+
+top_level_decl_list
+    : top_level_decl
+    | top_level_decl_list top_level_decl
+    ;
+
+top_level_decl
+    : IDENTIFIER
+	;
+
+%%
+
+
+}
+
+
+

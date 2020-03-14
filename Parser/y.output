@@ -1,0 +1,56 @@
+   0  $accept : translation_unit $end
+
+   1  translation_unit : top_level_decl_list
+
+   2  top_level_decl_list : top_level_decl
+   3                      | top_level_decl_list top_level_decl
+
+   4  top_level_decl : IDENTIFIER
+
+state 0
+	$accept : . translation_unit $end  (0)
+
+	IDENTIFIER  shift 1
+	.  error
+
+	translation_unit  goto 2
+	top_level_decl_list  goto 3
+	top_level_decl  goto 4
+
+
+state 1
+	top_level_decl : IDENTIFIER .  (4)
+
+	.  reduce 4
+
+
+state 2
+	$accept : translation_unit . $end  (0)
+
+	$end  accept
+
+
+state 3
+	translation_unit : top_level_decl_list .  (1)
+	top_level_decl_list : top_level_decl_list . top_level_decl  (3)
+
+	IDENTIFIER  shift 1
+	$end  reduce 1
+
+	top_level_decl  goto 5
+
+
+state 4
+	top_level_decl_list : top_level_decl .  (2)
+
+	.  reduce 2
+
+
+state 5
+	top_level_decl_list : top_level_decl_list top_level_decl .  (3)
+
+	.  reduce 3
+
+
+32 terminals, 4 nonterminals
+5 grammar rules, 6 states

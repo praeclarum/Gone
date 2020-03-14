@@ -33,6 +33,11 @@ namespace Gone.Parser
             return ((List<T>)list).ToArray ();
         }
 
+        List<T> EmptyList<T>()
+        {
+            return new List<T> ();
+        }
+
         List<T> NewList<T>(object item)
         {
             return new List<T> { (T)item };

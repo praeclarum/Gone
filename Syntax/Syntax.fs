@@ -9,14 +9,6 @@ type Location =
     }
 type Range = Location * Location
 
-type Statement =
-    | Block of BlockData
-
-and BlockData =
-    {
-        Statements : Statement[]
-    }
-
 type Identifier = string
 and IdentifierList = Identifier list
 
@@ -31,8 +23,44 @@ type QualifiedIdent =
 type Tag = string
 
 
-type Expression = string
-and ExpressionList = Expression list
+
+
+
+type Statement =
+    | Block of BlockData
+    | ExpressionStmt of Expression
+
+and BlockData =
+    {
+        Statements : Statement[]
+    }
+    static member Empty = { Statements = [||] }
+
+and Expression =
+    | CallExpr of CallData
+    | SelectorExpr of SelectorData
+    | StringLit of string
+    | VariableExpr of VariableData
+
+and VariableData =
+    {
+        Name : string
+        Package : PackageName option
+    }
+
+and CallData =
+    {
+        Function : Expression
+        Arguments : ExpressionList
+    }
+
+and SelectorData =
+    {
+        Parent : Expression
+        Name : string
+    }
+
+and ExpressionList = Expression[]
 
 
 
@@ -69,7 +97,7 @@ and FieldBody =
 and FunctionSignature =
     {
         Parameters : Parameter[]
-        Result : FunctionResult
+        Result : FunctionResult option
     }
 and FunctionResult =
     | ResultParameters of Parameters

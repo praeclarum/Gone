@@ -390,6 +390,108 @@ case 19:
 case 21:
   case_21();
   break;
+case 24:
+  case_24();
+  break;
+case 25:
+  case_25();
+  break;
+case 28:
+#line 149 "Parser.jay"
+  {
+        yyVal = yyVals[-1+yyTop];
+    }
+  break;
+case 29:
+#line 153 "Parser.jay"
+  {
+        yyVal = EmptyList<Parameter> ();
+    }
+  break;
+case 37:
+#line 175 "Parser.jay"
+  {
+        yyVal = new BlockData (ToArray<Statement> (yyVals[-1+yyTop]));
+    }
+  break;
+case 38:
+#line 179 "Parser.jay"
+  {
+        yyVal = BlockData.Empty;
+    }
+  break;
+case 39:
+#line 186 "Parser.jay"
+  {
+        yyVal = NewList<Statement> (yyVals[0+yyTop]);
+    }
+  break;
+case 40:
+#line 190 "Parser.jay"
+  {
+        yyVal = AppendList<Statement> (yyVals[-2+yyTop], yyVals[0+yyTop]);
+    }
+  break;
+case 43:
+#line 205 "Parser.jay"
+  {
+        yyVal = Statement.NewExpressionStmt ((Expression)yyVals[0+yyTop]);
+    }
+  break;
+case 46:
+#line 220 "Parser.jay"
+  {
+        yyVal = Expression.NewCallExpr(new CallData((Expression)yyVals[-1+yyTop], ToArray<Expression>(yyVals[0+yyTop])));
+    }
+  break;
+case 47:
+#line 224 "Parser.jay"
+  {
+        yyVal = Expression.NewSelectorExpr(new SelectorData((Expression)yyVals[-1+yyTop], (string)(yyVals[0+yyTop])));
+    }
+  break;
+case 51:
+  case_51();
+  break;
+case 53:
+  case_53();
+  break;
+case 55:
+#line 258 "Parser.jay"
+  {
+        yyVal = Expression.NewStringLit ((string)yyVals[0+yyTop]);
+    }
+  break;
+case 56:
+#line 265 "Parser.jay"
+  {
+        yyVal = yyVals[0+yyTop];
+    }
+  break;
+case 57:
+#line 272 "Parser.jay"
+  {
+        yyVal = yyVals[-1+yyTop];
+    }
+  break;
+case 58:
+#line 276 "Parser.jay"
+  {
+        yyVal = EmptyList<Expression> ();
+    }
+  break;
+case 60:
+#line 289 "Parser.jay"
+  {
+        yyVal = NewList<Expression> (yyVals[0+yyTop]);
+    }
+  break;
+case 61:
+#line 293 "Parser.jay"
+  {
+        yyVal = AppendList<Expression> (yyVals[-2+yyTop], yyVals[0+yyTop]);
+    }
+  break;
 #line default
         }
         yyTop -= yyLen[yyN];
@@ -431,6 +533,34 @@ void case_21()
         yyVal = TopLevelDecl.NewFunctionDecl (new FunctionDeclData (
             (string)yyVals[-2+yyTop], (FunctionSignature)yyVals[-1+yyTop],
             FSharpOption<BlockData>.Some ((BlockData)yyVals[0+yyTop])));
+    }
+
+void case_24()
+#line 131 "Parser.jay"
+{
+        yyVal = new FunctionSignature(ToArray<Parameter>(yyVals[-1+yyTop]),
+            FSharpOption<FunctionResult>.Some ((FunctionResult)yyVals[0+yyTop]));
+    }
+
+void case_25()
+#line 136 "Parser.jay"
+{
+        yyVal = new FunctionSignature(ToArray<Parameter>(yyVals[0+yyTop]),
+            FSharpOption<FunctionResult>.None);
+    }
+
+void case_51()
+#line 235 "Parser.jay"
+{
+        yyVal = Expression.NewVariableExpr (new VariableData ((string)yyVals[0+yyTop],
+            FSharpOption<string>.None));
+    }
+
+void case_53()
+#line 244 "Parser.jay"
+{
+        yyVal = Expression.NewVariableExpr (new VariableData ((string)yyVals[0+yyTop],
+            FSharpOption<string>.Some((string)yyVals[-2+yyTop])));
     }
 
 #line default
@@ -556,7 +686,7 @@ void case_21()
    -1,   -1,   -1,   -1,   -1,   -1,  266,  266,
   };
 
-#line 260 "Parser.jay"
+#line 321 "Parser.jay"
 
 
 }

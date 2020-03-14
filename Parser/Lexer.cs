@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace Gone.Parser
 {
@@ -20,13 +21,28 @@ namespace Gone.Parser
             val = null;
         }
 
+        public static Tuple<int, object>[] Tokenize(string code)
+        {
+            var r = new List<Tuple<int, object>>();
+            var l = new Lexer(code);
+            while (l.advance())
+            {
+                r.Add(Tuple.Create (l.token(), l.value()));
+            }
+            return r.ToArray();
+        }
+
         public bool advance()
         {
+            val = null;
+
             //
             // Skip whitespace
             //
             while (p < length && char.IsWhiteSpace(code[p]))
                 p++;
+            if (p >= length)
+                return false;
 
             //
             // Decide what to do
@@ -49,7 +65,7 @@ namespace Gone.Parser
                     p++;
                     break;
                 case '+':
-                    if (p + 1 < length && code[p] == '=')
+                    if (p + 1 < length && code[p + 1] == '=')
                     {
                         tok = TokenKind.OP_PLUSEQ;
                         p += 2;

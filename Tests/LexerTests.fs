@@ -1,12 +1,30 @@
 ﻿module LexerTests
 
 open Gone
+open Gone.Parser
 
 open NUnit.Framework
 
 [<SetUp>]
 let Setup () =
     ()
+
+
+[<Test>]
+let IdentsAndSomeOps () =
+
+    let code = """
+        frank += james
+        ()"""
+
+    let tokens = Lexer.Tokenize code
+
+    Assert.AreEqual(5, tokens.Length)
+    Assert.AreEqual(Parser.TokenKind.IDENTIFIER, fst tokens.[0])
+    Assert.AreEqual("frank", snd tokens.[0])
+    Assert.AreEqual(Parser.TokenKind.OP_PLUSEQ, fst tokens.[1])
+    Assert.AreEqual(null, snd tokens.[1])
+
 
 [<Test>]
 let LotsOTokens () =
@@ -21,7 +39,8 @@ let LotsOTokens () =
         }"""
 
 
-    let parser = Parser.GoParser ()
-    let ast = parser.Parse (code)
+    let tokens = Lexer.Tokenize code
+
+
 
     Assert.Pass()

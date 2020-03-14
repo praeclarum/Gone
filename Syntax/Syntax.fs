@@ -101,4 +101,28 @@ and Declaration =
     | TypeDecl
     | VarDecl
 
+type SourceFile =
+    {
+        Package : PackageClause
+        Imports : ImportDecl[]
+        Declarations : TopLevelDecl[]
+    }
+
+and PackageClause = PackageName
+
+
+and ImportDecl = ImportSpec[]
+and ImportSpec = 
+    {
+        PackagePath : PackageName[]
+        ImportPath : ImportPath
+    }
+and ImportPath = string
+
+
+
+
+
+
+
 

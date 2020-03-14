@@ -17,7 +17,7 @@ namespace Gone.Parser
 		
 %}
 
-%token IDENTIFIER INTEGER_LITERAL FLOATING_LITERAL RUNE_LITERAL STRING_LITERAL
+%token IDENTIFIER TYPE_IDENTIFIER INTEGER_LITERAL FLOATING_LITERAL RUNE_LITERAL STRING_LITERAL
 
 %token BREAK        DEFAULT      FUNC         INTERFACE    SELECT
 %token CASE         DEFER        GO           MAP          STRUCT
@@ -25,16 +25,54 @@ namespace Gone.Parser
 %token CONST        FALLTHROUGH  IF           RANGE        TYPE
 %token CONTINUE     FOR          IMPORT       RETURN       VAR
 
-%token OP_PLUSEQ
+%token OP_PLUSEQ OP_ELLIPSIS
 
 
 
-%start translation_unit
+%start source_file
 %%
 
+source_file
+    : package_clause import_decl_list top_level_decl_list
+    | package_clause import_decl_list
+    | package_clause top_level_decl_list
+    | package_clause
+    ;
 
-translation_unit
-    : top_level_decl_list
+package_clause
+    : PACKAGE IDENTIFIER
+    ;
+
+import_decl_list
+    : import_decl
+    | import_decl_list import_decl
+    ;
+
+import_decl
+    : IMPORT import_spec
+    | IMPORT '(' import_spec_list ')'
+    ;
+
+import_spec_list
+    : import_spec
+    | import_spec_list ';' import_spec
+    ;
+
+import_spec
+    : package_name_list import_path
+    ;
+
+import_path
+    : STRING_LITERAL
+    ;
+
+package_name_list
+    : package_name
+    | package_name_list '.' package_name
+    ;
+
+package_name
+    : IDENTIFIER
     ;
 
 top_level_decl_list
@@ -43,10 +81,117 @@ top_level_decl_list
     ;
 
 top_level_decl
-    : declaration
-    | function_decl
-    | method_decl
-	;
+    //: declaration
+    : function_decl
+    //| method_decl
+    ;
+
+function_decl
+    : FUNC IDENTIFIER function_signature function_body
+    | FUNC IDENTIFIER function_signature
+    ;
+
+function_body : block ;
+
+//function_type   : FUNC function_signature ;
+function_signature
+    : parameters result
+    | parameters
+    ;
+result
+    : parameters
+    | type
+    ;
+parameters
+    : '('  parameter_list ')'
+    | '(' ')'
+    ;
+parameter_list
+    : parameter_decl
+    | parameter_list ',' parameter_decl
+    ;
+
+parameter_decl
+    : identifier_list OP_ELLIPSIS type
+    | identifier_list type
+    | type
+    ;
+
+identifier_list
+    : IDENTIFIER
+    | identifier_list ',' IDENTIFIER
+    ;
+
+block
+    : '{' statement_list '}'
+    | '{' '}'
+    ;
+
+statement_list
+    : statement
+    | statement_list ';' statement
+    ;
+
+statement
+    : simple_stmt
+    ;
+
+simple_stmt
+    : expression_stmt
+    ;
+
+expression_stmt
+    : expression
+    ;
+
+expression
+    : unary_expr
+    ;
+
+unary_expr
+    : primary_expr
+    ;
+
+primary_expr
+    : primary_expr arguments
+    ;
+
+arguments
+    : '(' inner_arguments ')'
+    | '(' ')'
+    ;
+
+// ( ExpressionList | Type [ "," ExpressionList ] ) [ "..." ] [ "," ]
+inner_arguments
+    : expression_list
+    //: [ ( ExpressionList | Type [ "," ExpressionList ] ) [ "..." ] [ "," ] ]
+    ;
+
+expression_list
+    : expression
+    | expression_list ',' expression
+    ;
+
+type
+    : type_name
+    ;
+
+type_name
+    : TYPE_IDENTIFIER
+    ;
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

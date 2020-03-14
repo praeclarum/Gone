@@ -59,11 +59,59 @@ namespace Gone.Parser
 //t // Use MarshalByRefObject to disable inlining
 //t class YYRules : MarshalByRefObject {
 //t  public static readonly string [] yyRule = {
-//t    "$accept : translation_unit",
-//t    "translation_unit : top_level_decl_list",
+//t    "$accept : source_file",
+//t    "source_file : package_clause import_decl_list top_level_decl_list",
+//t    "source_file : package_clause import_decl_list",
+//t    "source_file : package_clause top_level_decl_list",
+//t    "source_file : package_clause",
+//t    "package_clause : PACKAGE IDENTIFIER",
+//t    "import_decl_list : import_decl",
+//t    "import_decl_list : import_decl_list import_decl",
+//t    "import_decl : IMPORT import_spec",
+//t    "import_decl : IMPORT '(' import_spec_list ')'",
+//t    "import_spec_list : import_spec",
+//t    "import_spec_list : import_spec_list ';' import_spec",
+//t    "import_spec : package_name_list import_path",
+//t    "import_path : STRING_LITERAL",
+//t    "package_name_list : package_name",
+//t    "package_name_list : package_name_list '.' package_name",
+//t    "package_name : IDENTIFIER",
 //t    "top_level_decl_list : top_level_decl",
 //t    "top_level_decl_list : top_level_decl_list top_level_decl",
-//t    "top_level_decl : IDENTIFIER",
+//t    "top_level_decl : function_decl",
+//t    "function_decl : FUNC IDENTIFIER function_signature function_body",
+//t    "function_decl : FUNC IDENTIFIER function_signature",
+//t    "function_body : block",
+//t    "function_signature : parameters result",
+//t    "function_signature : parameters",
+//t    "result : parameters",
+//t    "result : type",
+//t    "parameters : '(' parameter_list ')'",
+//t    "parameters : '(' ')'",
+//t    "parameter_list : parameter_decl",
+//t    "parameter_list : parameter_list ',' parameter_decl",
+//t    "parameter_decl : identifier_list OP_ELLIPSIS type",
+//t    "parameter_decl : identifier_list type",
+//t    "parameter_decl : type",
+//t    "identifier_list : IDENTIFIER",
+//t    "identifier_list : identifier_list ',' IDENTIFIER",
+//t    "block : '{' statement_list '}'",
+//t    "block : '{' '}'",
+//t    "statement_list : statement",
+//t    "statement_list : statement_list ';' statement",
+//t    "statement : simple_stmt",
+//t    "simple_stmt : expression_stmt",
+//t    "expression_stmt : expression",
+//t    "expression : unary_expr",
+//t    "unary_expr : primary_expr",
+//t    "primary_expr : primary_expr arguments",
+//t    "arguments : '(' inner_arguments ')'",
+//t    "arguments : '(' ')'",
+//t    "inner_arguments : expression_list",
+//t    "expression_list : expression",
+//t    "expression_list : expression_list ',' expression",
+//t    "type : type_name",
+//t    "type_name : TYPE_IDENTIFIER",
 //t  };
 //t public static string getRule (int index) {
 //t    return yyRule [index];
@@ -73,6 +121,13 @@ namespace Gone.Parser
     "end-of-file",null,null,null,null,null,null,null,null,null,null,null,
     null,null,null,null,null,null,null,null,null,null,null,null,null,null,
     null,null,null,null,null,null,null,null,null,null,null,null,null,null,
+    "'('","')'",null,null,"','",null,"'.'",null,null,null,null,null,null,
+    null,null,null,null,null,null,"';'",null,null,null,null,null,null,
+    null,null,null,null,null,null,null,null,null,null,null,null,null,null,
+    null,null,null,null,null,null,null,null,null,null,null,null,null,null,
+    null,null,null,null,null,null,null,null,null,null,null,null,null,null,
+    null,null,null,null,null,null,null,null,null,null,null,null,null,null,
+    null,"'{'",null,"'}'",null,null,null,null,null,null,null,null,null,
     null,null,null,null,null,null,null,null,null,null,null,null,null,null,
     null,null,null,null,null,null,null,null,null,null,null,null,null,null,
     null,null,null,null,null,null,null,null,null,null,null,null,null,null,
@@ -81,18 +136,12 @@ namespace Gone.Parser
     null,null,null,null,null,null,null,null,null,null,null,null,null,null,
     null,null,null,null,null,null,null,null,null,null,null,null,null,null,
     null,null,null,null,null,null,null,null,null,null,null,null,null,null,
-    null,null,null,null,null,null,null,null,null,null,null,null,null,null,
-    null,null,null,null,null,null,null,null,null,null,null,null,null,null,
-    null,null,null,null,null,null,null,null,null,null,null,null,null,null,
-    null,null,null,null,null,null,null,null,null,null,null,null,null,null,
-    null,null,null,null,null,null,null,null,null,null,null,null,null,null,
-    null,null,null,null,null,null,null,null,null,null,null,null,null,null,
-    null,null,null,null,null,null,null,null,null,null,null,null,null,null,
-    null,null,null,null,null,null,null,"IDENTIFIER","INTEGER_LITERAL",
-    "FLOATING_LITERAL","RUNE_LITERAL","STRING_LITERAL","BREAK","DEFAULT",
-    "FUNC","INTERFACE","SELECT","CASE","DEFER","GO","MAP","STRUCT","CHAN",
-    "ELSE","GOTO","PACKAGE","SWITCH","CONST","FALLTHROUGH","IF","RANGE",
-    "TYPE","CONTINUE","FOR","IMPORT","RETURN","VAR","OP_PLUSEQ",
+    null,null,null,null,null,null,null,null,null,null,"IDENTIFIER",
+    "TYPE_IDENTIFIER","INTEGER_LITERAL","FLOATING_LITERAL","RUNE_LITERAL",
+    "STRING_LITERAL","BREAK","DEFAULT","FUNC","INTERFACE","SELECT","CASE",
+    "DEFER","GO","MAP","STRUCT","CHAN","ELSE","GOTO","PACKAGE","SWITCH",
+    "CONST","FALLTHROUGH","IF","RANGE","TYPE","CONTINUE","FOR","IMPORT",
+    "RETURN","VAR","OP_PLUSEQ","OP_ELLIPSIS",
   };
 
   /** index-checked interface to yyNames[].
@@ -313,34 +362,123 @@ namespace Gone.Parser
 */
 #line default
    static readonly short [] yyLhs  = {              -1,
-    0,    1,    1,    2,
+    0,    0,    0,    0,    1,    2,    2,    4,    4,    6,
+    6,    5,    8,    7,    7,    9,    3,    3,   10,   11,
+   11,   13,   12,   12,   16,   16,   15,   15,   18,   18,
+   19,   19,   19,   20,   20,   14,   14,   21,   21,   22,
+   23,   24,   25,   26,   27,   28,   28,   29,   30,   30,
+   17,   31,
   };
    static readonly short [] yyLen = {           2,
-    1,    1,    2,    1,
+    3,    2,    2,    1,    2,    1,    2,    2,    4,    1,
+    3,    2,    1,    1,    3,    1,    1,    2,    1,    4,
+    3,    1,    2,    1,    1,    1,    3,    2,    1,    3,
+    3,    2,    1,    1,    3,    3,    2,    1,    3,    1,
+    1,    1,    1,    1,    2,    3,    2,    1,    1,    3,
+    1,    1,
   };
    static readonly short [] yyDefRed = {            0,
-    4,    0,    0,    2,    3,
+    0,    0,    0,    5,    0,    0,    0,    0,    6,   17,
+   19,    0,   16,    0,    8,    0,   14,    0,    7,   18,
+    0,    0,    0,   10,    0,   13,    0,   12,   34,   52,
+   28,   33,    0,   29,    0,   51,    0,   20,   22,   25,
+   23,   26,    9,    0,   15,   27,    0,    0,    0,   32,
+   37,    0,   38,   40,   41,   42,   43,    0,   11,   30,
+   31,   35,    0,   36,    0,   45,   39,   47,   49,    0,
+    0,   46,    0,   50,
   };
   protected static readonly short [] yyDgoto  = {             2,
-    3,    4,
+    3,    7,    8,    9,   15,   25,   16,   28,   17,   10,
+   11,   22,   38,   39,   23,   41,   32,   33,   34,   35,
+   52,   53,   54,   55,   56,   57,   58,   66,   70,   71,
+   36,
   };
-  protected static readonly short [] yySindex = {         -257,
-    0,    0, -257,    0,    0,
+  protected static readonly short [] yySindex = {         -256,
+ -235,    0, -254,    0, -231,  -33, -254, -238,    0,    0,
+    0,  -12,    0, -228,    0,  -42,    0, -238,    0,    0,
+  -35,  -93,  -37,    0,  -27,    0, -228,    0,    0,    0,
+    0,    0,  -25,    0,  -44,    0,  -92,    0,    0,    0,
+    0,    0,    0, -228,    0,    0, -240, -224, -222,    0,
+    0,  -50,    0,    0,    0,    0,    0,   -2,    0,    0,
+    0,    0,    0,    0,   -5,    0,    0,    0,    0,    3,
+   -3,    0,    0,    0,
   };
   protected static readonly short [] yyRindex = {            0,
-    0,    0,    1,    0,    0,
+    0,    0,   39,    0,    0,    0,   42,   43,    0,    0,
+    0,    0,    0,    0,    0,    0,    0,   45,    0,    0,
+    0,    2,    1,    0,    0,    0,    0,    0,    0,    0,
+    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
+    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
+    0,    0,    0,    0,    0,    0,    0,  -36,    0,    0,
+    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
+    5,    0,    0,    0,
   };
   protected static readonly short [] yyGindex = {            0,
-    0,   -1,
+    0,    0,   40,   41,   -4,    0,    0,    0,   22,    7,
+    0,    0,    0,    0,   27,    0,  -11,    0,    4,    0,
+    0,  -10,    0,    0,  -52,    0,    0,    0,    0,    0,
+    0,
   };
-  protected static readonly short [] yyTable = {             1,
-    1,    5,
+  protected static readonly short [] yyTable = {            49,
+   24,   21,   21,   27,   44,   31,   14,   44,   63,   24,
+    5,   42,   69,   43,   20,   46,   29,   30,   47,    1,
+   74,    4,   44,   50,   20,   12,    5,   21,   13,   37,
+    6,   44,   51,   30,   62,   68,   61,   65,    4,   59,
+   73,    2,    3,   72,    1,   48,   18,   19,   45,   40,
+   60,    0,   67,    0,    0,    0,    0,    0,    0,    0,
+    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
+    0,    0,    0,    0,   64,    0,    0,    0,    0,    0,
+    0,    0,    0,    0,    0,    0,    0,    0,   44,    0,
+    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
+    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
+    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
+    0,    0,    0,   24,    0,    0,    0,    0,    0,    0,
+    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
+    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
+    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
+    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
+    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
+    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
+    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
+    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
+    0,    0,    0,   30,    0,    0,    0,    0,    0,   26,
+   30,   29,   30,   13,    0,    0,    0,    0,    0,    0,
+    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
+    0,    0,    0,    0,   48,    0,    0,    0,    0,    0,
+    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
+    0,    0,    0,    0,    0,   24,   21,
   };
-  protected static readonly short [] yyCheck = {           257,
-    0,    3,
+  protected static readonly short [] yyCheck = {            44,
+    0,    0,   40,   46,   41,   41,   40,   44,   59,   14,
+  265,   23,   65,   41,    8,   41,  257,  258,   44,  276,
+   73,  257,   59,   35,   18,  257,  265,   40,  257,  123,
+  285,   59,  125,  258,  257,   41,   48,   40,    0,   44,
+   44,    0,    0,   41,    0,   41,    7,    7,   27,   23,
+   47,   -1,   63,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
+   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
+   -1,   -1,   -1,   -1,  125,   -1,   -1,   -1,   -1,   -1,
+   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,  125,   -1,
+   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
+   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
+   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
+   -1,   -1,   -1,  123,   -1,   -1,   -1,   -1,   -1,   -1,
+   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
+   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
+   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
+   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
+   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
+   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
+   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
+   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
+   -1,   -1,   -1,  258,   -1,   -1,   -1,   -1,   -1,  262,
+  258,  257,  258,  257,   -1,   -1,   -1,   -1,   -1,   -1,
+   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
+   -1,   -1,   -1,   -1,  289,   -1,   -1,   -1,   -1,   -1,
+   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
+   -1,   -1,   -1,   -1,   -1,  265,  265,
   };
 
-#line 50 "Parser.jay"
+#line 200 "Parser.jay"
 
 
 }
@@ -425,36 +563,38 @@ namespace yydebug {
 // %token constants
 public class TokenKind {
   public const int IDENTIFIER = 257;
-  public const int INTEGER_LITERAL = 258;
-  public const int FLOATING_LITERAL = 259;
-  public const int RUNE_LITERAL = 260;
-  public const int STRING_LITERAL = 261;
-  public const int BREAK = 262;
-  public const int DEFAULT = 263;
-  public const int FUNC = 264;
-  public const int INTERFACE = 265;
-  public const int SELECT = 266;
-  public const int CASE = 267;
-  public const int DEFER = 268;
-  public const int GO = 269;
-  public const int MAP = 270;
-  public const int STRUCT = 271;
-  public const int CHAN = 272;
-  public const int ELSE = 273;
-  public const int GOTO = 274;
-  public const int PACKAGE = 275;
-  public const int SWITCH = 276;
-  public const int CONST = 277;
-  public const int FALLTHROUGH = 278;
-  public const int IF = 279;
-  public const int RANGE = 280;
-  public const int TYPE = 281;
-  public const int CONTINUE = 282;
-  public const int FOR = 283;
-  public const int IMPORT = 284;
-  public const int RETURN = 285;
-  public const int VAR = 286;
-  public const int OP_PLUSEQ = 287;
+  public const int TYPE_IDENTIFIER = 258;
+  public const int INTEGER_LITERAL = 259;
+  public const int FLOATING_LITERAL = 260;
+  public const int RUNE_LITERAL = 261;
+  public const int STRING_LITERAL = 262;
+  public const int BREAK = 263;
+  public const int DEFAULT = 264;
+  public const int FUNC = 265;
+  public const int INTERFACE = 266;
+  public const int SELECT = 267;
+  public const int CASE = 268;
+  public const int DEFER = 269;
+  public const int GO = 270;
+  public const int MAP = 271;
+  public const int STRUCT = 272;
+  public const int CHAN = 273;
+  public const int ELSE = 274;
+  public const int GOTO = 275;
+  public const int PACKAGE = 276;
+  public const int SWITCH = 277;
+  public const int CONST = 278;
+  public const int FALLTHROUGH = 279;
+  public const int IF = 280;
+  public const int RANGE = 281;
+  public const int TYPE = 282;
+  public const int CONTINUE = 283;
+  public const int FOR = 284;
+  public const int IMPORT = 285;
+  public const int RETURN = 286;
+  public const int VAR = 287;
+  public const int OP_PLUSEQ = 288;
+  public const int OP_ELLIPSIS = 289;
   public const int yyErrorCode = 256;
  }
  namespace yyParser {

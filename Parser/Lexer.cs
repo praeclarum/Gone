@@ -35,6 +35,8 @@ namespace Gone.Parser
             return r.ToArray();
         }
 
+
+
         public bool advance()
         {
             val = null;
@@ -116,8 +118,9 @@ namespace Gone.Parser
                         {
                             end++;
                         }
-                        val = code.Substring(start, end - start);
-                        tok = TokenKind.IDENTIFIER;
+                        var s = code.Substring(start, end - start);
+                        val = s;
+                        tok = keywords.TryGetValue (s, out var t) ? t : TokenKind.IDENTIFIER;
                         p = end;
                     }
                     else
@@ -133,6 +136,19 @@ namespace Gone.Parser
         public int token() => tok;
 
         public object value() => val;
+
+        static readonly Dictionary<string, int> keywords = new Dictionary<string, int>
+        {
+            { "func", TokenKind.FUNC },
+            { "package", TokenKind.PACKAGE },
+            { "import", TokenKind.IMPORT },
+//            %token BREAK        DEFAULT      FUNC         INTERFACE    SELECT
+//%token CASE         DEFER        GO           MAP          STRUCT
+//%token CHAN         ELSE         GOTO         PACKAGE      SWITCH
+//%token CONST        FALLTHROUGH  IF           RANGE        TYPE
+//%token CONTINUE     FOR          IMPORT       RETURN       VAR
+
+        };
     }
 }
 

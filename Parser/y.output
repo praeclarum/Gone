@@ -1,56 +1,698 @@
-   0  $accept : translation_unit $end
+   0  $accept : source_file $end
 
-   1  translation_unit : top_level_decl_list
+   1  source_file : package_clause import_decl_list top_level_decl_list
+   2              | package_clause import_decl_list
+   3              | package_clause top_level_decl_list
+   4              | package_clause
 
-   2  top_level_decl_list : top_level_decl
-   3                      | top_level_decl_list top_level_decl
+   5  package_clause : PACKAGE IDENTIFIER
 
-   4  top_level_decl : IDENTIFIER
+   6  import_decl_list : import_decl
+   7                   | import_decl_list import_decl
+
+   8  import_decl : IMPORT import_spec
+   9              | IMPORT '(' import_spec_list ')'
+
+  10  import_spec_list : import_spec
+  11                   | import_spec_list ';' import_spec
+
+  12  import_spec : package_name_list import_path
+
+  13  import_path : STRING_LITERAL
+
+  14  package_name_list : package_name
+  15                    | package_name_list '.' package_name
+
+  16  package_name : IDENTIFIER
+
+  17  top_level_decl_list : top_level_decl
+  18                      | top_level_decl_list top_level_decl
+
+  19  top_level_decl : function_decl
+
+  20  function_decl : FUNC IDENTIFIER function_signature function_body
+  21                | FUNC IDENTIFIER function_signature
+
+  22  function_body : block
+
+  23  function_signature : parameters result
+  24                     | parameters
+
+  25  result : parameters
+  26         | type
+
+  27  parameters : '(' parameter_list ')'
+  28             | '(' ')'
+
+  29  parameter_list : parameter_decl
+  30                 | parameter_list ',' parameter_decl
+
+  31  parameter_decl : identifier_list OP_ELLIPSIS type
+  32                 | identifier_list type
+  33                 | type
+
+  34  identifier_list : IDENTIFIER
+  35                  | identifier_list ',' IDENTIFIER
+
+  36  block : '{' statement_list '}'
+  37        | '{' '}'
+
+  38  statement_list : statement
+  39                 | statement_list ';' statement
+
+  40  statement : simple_stmt
+
+  41  simple_stmt : expression_stmt
+
+  42  expression_stmt : expression
+
+  43  expression : unary_expr
+
+  44  unary_expr : primary_expr
+
+  45  primary_expr : primary_expr arguments
+
+  46  arguments : '(' inner_arguments ')'
+  47            | '(' ')'
+
+  48  inner_arguments : expression_list
+
+  49  expression_list : expression
+  50                  | expression_list ',' expression
+
+  51  type : type_name
+
+  52  type_name : TYPE_IDENTIFIER
 
 state 0
-	$accept : . translation_unit $end  (0)
+	$accept : . source_file $end  (0)
 
-	IDENTIFIER  shift 1
+	PACKAGE  shift 1
 	.  error
 
-	translation_unit  goto 2
-	top_level_decl_list  goto 3
-	top_level_decl  goto 4
+	source_file  goto 2
+	package_clause  goto 3
 
 
 state 1
-	top_level_decl : IDENTIFIER .  (4)
+	package_clause : PACKAGE . IDENTIFIER  (5)
 
-	.  reduce 4
+	IDENTIFIER  shift 4
+	.  error
 
 
 state 2
-	$accept : translation_unit . $end  (0)
+	$accept : source_file . $end  (0)
 
 	$end  accept
 
 
 state 3
-	translation_unit : top_level_decl_list .  (1)
-	top_level_decl_list : top_level_decl_list . top_level_decl  (3)
+	source_file : package_clause . import_decl_list top_level_decl_list  (1)
+	source_file : package_clause . import_decl_list  (2)
+	source_file : package_clause . top_level_decl_list  (3)
+	source_file : package_clause .  (4)
 
-	IDENTIFIER  shift 1
-	$end  reduce 1
+	FUNC  shift 5
+	IMPORT  shift 6
+	$end  reduce 4
 
-	top_level_decl  goto 5
+	import_decl_list  goto 7
+	top_level_decl_list  goto 8
+	import_decl  goto 9
+	top_level_decl  goto 10
+	function_decl  goto 11
 
 
 state 4
-	top_level_decl_list : top_level_decl .  (2)
+	package_clause : PACKAGE IDENTIFIER .  (5)
 
-	.  reduce 2
+	.  reduce 5
 
 
 state 5
-	top_level_decl_list : top_level_decl_list top_level_decl .  (3)
+	function_decl : FUNC . IDENTIFIER function_signature function_body  (20)
+	function_decl : FUNC . IDENTIFIER function_signature  (21)
 
-	.  reduce 3
+	IDENTIFIER  shift 12
+	.  error
 
 
-32 terminals, 4 nonterminals
-5 grammar rules, 6 states
+state 6
+	import_decl : IMPORT . import_spec  (8)
+	import_decl : IMPORT . '(' import_spec_list ')'  (9)
+
+	IDENTIFIER  shift 13
+	'('  shift 14
+	.  error
+
+	import_spec  goto 15
+	package_name_list  goto 16
+	package_name  goto 17
+
+
+state 7
+	source_file : package_clause import_decl_list . top_level_decl_list  (1)
+	source_file : package_clause import_decl_list .  (2)
+	import_decl_list : import_decl_list . import_decl  (7)
+
+	FUNC  shift 5
+	IMPORT  shift 6
+	$end  reduce 2
+
+	top_level_decl_list  goto 18
+	import_decl  goto 19
+	top_level_decl  goto 10
+	function_decl  goto 11
+
+
+state 8
+	source_file : package_clause top_level_decl_list .  (3)
+	top_level_decl_list : top_level_decl_list . top_level_decl  (18)
+
+	FUNC  shift 5
+	$end  reduce 3
+
+	top_level_decl  goto 20
+	function_decl  goto 11
+
+
+state 9
+	import_decl_list : import_decl .  (6)
+
+	.  reduce 6
+
+
+state 10
+	top_level_decl_list : top_level_decl .  (17)
+
+	.  reduce 17
+
+
+state 11
+	top_level_decl : function_decl .  (19)
+
+	.  reduce 19
+
+
+state 12
+	function_decl : FUNC IDENTIFIER . function_signature function_body  (20)
+	function_decl : FUNC IDENTIFIER . function_signature  (21)
+
+	'('  shift 21
+	.  error
+
+	function_signature  goto 22
+	parameters  goto 23
+
+
+state 13
+	package_name : IDENTIFIER .  (16)
+
+	.  reduce 16
+
+
+state 14
+	import_decl : IMPORT '(' . import_spec_list ')'  (9)
+
+	IDENTIFIER  shift 13
+	.  error
+
+	import_spec  goto 24
+	import_spec_list  goto 25
+	package_name_list  goto 16
+	package_name  goto 17
+
+
+state 15
+	import_decl : IMPORT import_spec .  (8)
+
+	.  reduce 8
+
+
+state 16
+	import_spec : package_name_list . import_path  (12)
+	package_name_list : package_name_list . '.' package_name  (15)
+
+	STRING_LITERAL  shift 26
+	'.'  shift 27
+	.  error
+
+	import_path  goto 28
+
+
+state 17
+	package_name_list : package_name .  (14)
+
+	.  reduce 14
+
+
+state 18
+	source_file : package_clause import_decl_list top_level_decl_list .  (1)
+	top_level_decl_list : top_level_decl_list . top_level_decl  (18)
+
+	FUNC  shift 5
+	$end  reduce 1
+
+	top_level_decl  goto 20
+	function_decl  goto 11
+
+
+state 19
+	import_decl_list : import_decl_list import_decl .  (7)
+
+	.  reduce 7
+
+
+state 20
+	top_level_decl_list : top_level_decl_list top_level_decl .  (18)
+
+	.  reduce 18
+
+
+state 21
+	parameters : '(' . parameter_list ')'  (27)
+	parameters : '(' . ')'  (28)
+
+	IDENTIFIER  shift 29
+	TYPE_IDENTIFIER  shift 30
+	')'  shift 31
+	.  error
+
+	type  goto 32
+	parameter_list  goto 33
+	parameter_decl  goto 34
+	identifier_list  goto 35
+	type_name  goto 36
+
+
+state 22
+	function_decl : FUNC IDENTIFIER function_signature . function_body  (20)
+	function_decl : FUNC IDENTIFIER function_signature .  (21)
+
+	'{'  shift 37
+	$end  reduce 21
+	FUNC  reduce 21
+
+	function_body  goto 38
+	block  goto 39
+
+
+state 23
+	function_signature : parameters . result  (23)
+	function_signature : parameters .  (24)
+
+	TYPE_IDENTIFIER  shift 30
+	'('  shift 21
+	$end  reduce 24
+	FUNC  reduce 24
+	'{'  reduce 24
+
+	parameters  goto 40
+	result  goto 41
+	type  goto 42
+	type_name  goto 36
+
+
+state 24
+	import_spec_list : import_spec .  (10)
+
+	.  reduce 10
+
+
+state 25
+	import_decl : IMPORT '(' import_spec_list . ')'  (9)
+	import_spec_list : import_spec_list . ';' import_spec  (11)
+
+	')'  shift 43
+	';'  shift 44
+	.  error
+
+
+state 26
+	import_path : STRING_LITERAL .  (13)
+
+	.  reduce 13
+
+
+state 27
+	package_name_list : package_name_list '.' . package_name  (15)
+
+	IDENTIFIER  shift 13
+	.  error
+
+	package_name  goto 45
+
+
+state 28
+	import_spec : package_name_list import_path .  (12)
+
+	.  reduce 12
+
+
+state 29
+	identifier_list : IDENTIFIER .  (34)
+
+	.  reduce 34
+
+
+state 30
+	type_name : TYPE_IDENTIFIER .  (52)
+
+	.  reduce 52
+
+
+state 31
+	parameters : '(' ')' .  (28)
+
+	.  reduce 28
+
+
+state 32
+	parameter_decl : type .  (33)
+
+	.  reduce 33
+
+
+state 33
+	parameters : '(' parameter_list . ')'  (27)
+	parameter_list : parameter_list . ',' parameter_decl  (30)
+
+	')'  shift 46
+	','  shift 47
+	.  error
+
+
+state 34
+	parameter_list : parameter_decl .  (29)
+
+	.  reduce 29
+
+
+state 35
+	parameter_decl : identifier_list . OP_ELLIPSIS type  (31)
+	parameter_decl : identifier_list . type  (32)
+	identifier_list : identifier_list . ',' IDENTIFIER  (35)
+
+	TYPE_IDENTIFIER  shift 30
+	OP_ELLIPSIS  shift 48
+	','  shift 49
+	.  error
+
+	type  goto 50
+	type_name  goto 36
+
+
+state 36
+	type : type_name .  (51)
+
+	.  reduce 51
+
+
+state 37
+	block : '{' . statement_list '}'  (36)
+	block : '{' . '}'  (37)
+
+	'}'  shift 51
+	.  error
+
+	statement_list  goto 52
+	statement  goto 53
+	simple_stmt  goto 54
+	expression_stmt  goto 55
+	expression  goto 56
+	unary_expr  goto 57
+	primary_expr  goto 58
+
+
+state 38
+	function_decl : FUNC IDENTIFIER function_signature function_body .  (20)
+
+	.  reduce 20
+
+
+state 39
+	function_body : block .  (22)
+
+	.  reduce 22
+
+
+state 40
+	result : parameters .  (25)
+
+	.  reduce 25
+
+
+state 41
+	function_signature : parameters result .  (23)
+
+	.  reduce 23
+
+
+state 42
+	result : type .  (26)
+
+	.  reduce 26
+
+
+state 43
+	import_decl : IMPORT '(' import_spec_list ')' .  (9)
+
+	.  reduce 9
+
+
+state 44
+	import_spec_list : import_spec_list ';' . import_spec  (11)
+
+	IDENTIFIER  shift 13
+	.  error
+
+	import_spec  goto 59
+	package_name_list  goto 16
+	package_name  goto 17
+
+
+state 45
+	package_name_list : package_name_list '.' package_name .  (15)
+
+	.  reduce 15
+
+
+state 46
+	parameters : '(' parameter_list ')' .  (27)
+
+	.  reduce 27
+
+
+state 47
+	parameter_list : parameter_list ',' . parameter_decl  (30)
+
+	IDENTIFIER  shift 29
+	TYPE_IDENTIFIER  shift 30
+	.  error
+
+	type  goto 32
+	parameter_decl  goto 60
+	identifier_list  goto 35
+	type_name  goto 36
+
+
+state 48
+	parameter_decl : identifier_list OP_ELLIPSIS . type  (31)
+
+	TYPE_IDENTIFIER  shift 30
+	.  error
+
+	type  goto 61
+	type_name  goto 36
+
+
+state 49
+	identifier_list : identifier_list ',' . IDENTIFIER  (35)
+
+	IDENTIFIER  shift 62
+	.  error
+
+
+state 50
+	parameter_decl : identifier_list type .  (32)
+
+	.  reduce 32
+
+
+state 51
+	block : '{' '}' .  (37)
+
+	.  reduce 37
+
+
+state 52
+	block : '{' statement_list . '}'  (36)
+	statement_list : statement_list . ';' statement  (39)
+
+	';'  shift 63
+	'}'  shift 64
+	.  error
+
+
+state 53
+	statement_list : statement .  (38)
+
+	.  reduce 38
+
+
+state 54
+	statement : simple_stmt .  (40)
+
+	.  reduce 40
+
+
+state 55
+	simple_stmt : expression_stmt .  (41)
+
+	.  reduce 41
+
+
+state 56
+	expression_stmt : expression .  (42)
+
+	.  reduce 42
+
+
+state 57
+	expression : unary_expr .  (43)
+
+	.  reduce 43
+
+
+state 58
+	unary_expr : primary_expr .  (44)
+	primary_expr : primary_expr . arguments  (45)
+
+	'('  shift 65
+	')'  reduce 44
+	';'  reduce 44
+	','  reduce 44
+	'}'  reduce 44
+
+	arguments  goto 66
+
+
+state 59
+	import_spec_list : import_spec_list ';' import_spec .  (11)
+
+	.  reduce 11
+
+
+state 60
+	parameter_list : parameter_list ',' parameter_decl .  (30)
+
+	.  reduce 30
+
+
+state 61
+	parameter_decl : identifier_list OP_ELLIPSIS type .  (31)
+
+	.  reduce 31
+
+
+state 62
+	identifier_list : identifier_list ',' IDENTIFIER .  (35)
+
+	.  reduce 35
+
+
+state 63
+	statement_list : statement_list ';' . statement  (39)
+
+
+	statement  goto 67
+	simple_stmt  goto 54
+	expression_stmt  goto 55
+	expression  goto 56
+	unary_expr  goto 57
+	primary_expr  goto 58
+
+
+state 64
+	block : '{' statement_list '}' .  (36)
+
+	.  reduce 36
+
+
+state 65
+	arguments : '(' . inner_arguments ')'  (46)
+	arguments : '(' . ')'  (47)
+
+	')'  shift 68
+	.  error
+
+	expression  goto 69
+	unary_expr  goto 57
+	primary_expr  goto 58
+	inner_arguments  goto 70
+	expression_list  goto 71
+
+
+state 66
+	primary_expr : primary_expr arguments .  (45)
+
+	.  reduce 45
+
+
+state 67
+	statement_list : statement_list ';' statement .  (39)
+
+	.  reduce 39
+
+
+state 68
+	arguments : '(' ')' .  (47)
+
+	.  reduce 47
+
+
+state 69
+	expression_list : expression .  (49)
+
+	.  reduce 49
+
+
+state 70
+	arguments : '(' inner_arguments . ')'  (46)
+
+	')'  shift 72
+	.  error
+
+
+state 71
+	inner_arguments : expression_list .  (48)
+	expression_list : expression_list . ',' expression  (50)
+
+	','  shift 73
+	')'  reduce 48
+
+
+state 72
+	arguments : '(' inner_arguments ')' .  (46)
+
+	.  reduce 46
+
+
+state 73
+	expression_list : expression_list ',' . expression  (50)
+
+
+	expression  goto 74
+	unary_expr  goto 57
+	primary_expr  goto 58
+
+
+state 74
+	expression_list : expression_list ',' expression .  (50)
+
+	.  reduce 50
+
+
+42 terminals, 33 nonterminals
+53 grammar rules, 75 states

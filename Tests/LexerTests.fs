@@ -44,3 +44,5 @@ let LotsOTokens () =
     Assert.AreEqual(16, tokens.Length)
     Assert.AreEqual(Parser.TokenKind.STRING_LITERAL, fst tokens.[3])
     Assert.AreEqual("fmt", snd tokens.[3])
+    Assert.AreEqual(Parser.TokenKind.PACKAGE, fst tokens.[0])
+    Assert.AreEqual("package", snd tokens.[0])

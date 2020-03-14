@@ -1,7 +1,8 @@
 %{
 
 using System;
-
+using Gone.Syntax;
+using Microsoft.FSharp.Core;
 
 #nullable disable
 
@@ -35,6 +36,9 @@ namespace Gone.Parser
 
 source_file
     : package_clause import_decl_list top_level_decl_list
+    {
+        $$ = new SourceFile ((string)$1, ToArray<ImportSpec[]>($2), ToArray<TopLevelDecl>($3));
+    }
     | package_clause import_decl_list
     | package_clause top_level_decl_list
     | package_clause
@@ -42,15 +46,27 @@ source_file
 
 package_clause
     : PACKAGE IDENTIFIER
+    {
+        $$ = $2;
+    }
     ;
 
 import_decl_list
     : import_decl
+    {
+        $$ = NewList<ImportSpec[]> ($1);
+    }
     | import_decl_list import_decl
+    {
+        $$ = AppendList<ImportSpec[]> ($1, $2);
+    }
     ;
 
 import_decl
     : IMPORT import_spec
+    {
+        $$ = new[] { (ImportSpec)$2 };
+    }
     | IMPORT '(' import_spec_list ')'
     ;
 
@@ -62,6 +78,9 @@ import_spec_list
 import_spec
     : package_name_list import_path
     | import_path
+    {
+        $$ = new ImportSpec(Array.Empty<string>(), (string)$1);
+    }
     ;
 
 import_path
@@ -79,7 +98,13 @@ package_name
 
 top_level_decl_list
     : top_level_decl
+    {
+        $$ = NewList<TopLevelDecl> ($1);
+    }
     | top_level_decl_list top_level_decl
+    {
+        $$ = AppendList<TopLevelDecl> ($1, $2);
+    }
     ;
 
 top_level_decl
@@ -90,6 +115,11 @@ top_level_decl
 
 function_decl
     : FUNC IDENTIFIER function_signature function_body
+    {
+        $$ = TopLevelDecl.NewFunctionDecl (new FunctionDeclData (
+            (string)$2, (FunctionSignature)$3,
+            FSharpOption<BlockData>.Some ((BlockData)$4)));
+    }
     | FUNC IDENTIFIER function_signature
     ;
 

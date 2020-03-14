@@ -1,4 +1,4 @@
-﻿module Gone.Syntax
+﻿namespace Gone.Syntax
 
 
 type Location =

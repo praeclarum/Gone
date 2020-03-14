@@ -1,5 +1,5 @@
 ﻿using System;
-
+using System.Collections.Generic;
 namespace Gone.Parser
 {
     public partial class GoParser
@@ -10,13 +10,13 @@ namespace Gone.Parser
         {
         }
 
-        public Syntax.TopLevelDecl[] Parse(string code)
+        public Syntax.SourceFile Parse(string code)
         {
             var lexer = new Lexer(code);
             try
             {
                 var r = yyparse(lexer);
-                return (Syntax.TopLevelDecl[])r;
+                return (Syntax.SourceFile)r;
             }
             catch (yyParser.yyException ex)
             {
@@ -26,6 +26,23 @@ namespace Gone.Parser
                 var subcode = code.Substring(startIndex, endIndex - startIndex);
                 throw new Exception($"Bad syntax near:\n{subcode}", ex);
             }
+        }
+
+        T[] ToArray<T>(object list)
+        {
+            return ((List<T>)list).ToArray ();
+        }
+
+        List<T> NewList<T>(object item)
+        {
+            return new List<T> { (T)item };
+        }
+
+        List<T> AppendList<T>(object list, object item)
+        {
+            var l = (List<T>)list;
+            l.Add((T)item);
+            return l;
         }
     }
 }

@@ -3,7 +3,8 @@
 #line 2 "Parser.jay"
 
 using System;
-
+using Gone.Syntax;
+using Microsoft.FSharp.Core;
 
 #nullable disable
 
@@ -338,6 +339,58 @@ namespace Gone.Parser
 //t          debug.reduce(yyState, yyStates[yyV-1], yyN, YYRules.getRule (yyN), yyLen[yyN]);
         yyVal = yyV > yyTop ? null : yyVals[yyV]; // yyVal = yyDefault(yyV > yyTop ? null : yyVals[yyV]);
         switch (yyN) {
+case 1:
+#line 41 "Parser.jay"
+  {
+        yyVal = new SourceFile ((string)yyVals[-2+yyTop], ToArray<ImportSpec[]>(yyVals[-1+yyTop]), ToArray<TopLevelDecl>(yyVals[0+yyTop]));
+    }
+  break;
+case 5:
+#line 51 "Parser.jay"
+  {
+        yyVal = yyVals[0+yyTop];
+    }
+  break;
+case 6:
+#line 58 "Parser.jay"
+  {
+        yyVal = NewList<ImportSpec[]> (yyVals[0+yyTop]);
+    }
+  break;
+case 7:
+#line 62 "Parser.jay"
+  {
+        yyVal = AppendList<ImportSpec[]> (yyVals[-1+yyTop], yyVals[0+yyTop]);
+    }
+  break;
+case 8:
+#line 69 "Parser.jay"
+  {
+        yyVal = new[] { (ImportSpec)yyVals[0+yyTop] };
+    }
+  break;
+case 13:
+#line 83 "Parser.jay"
+  {
+        yyVal = new ImportSpec(Array.Empty<string>(), (string)yyVals[0+yyTop]);
+    }
+  break;
+case 18:
+#line 103 "Parser.jay"
+  {
+        yyVal = NewList<TopLevelDecl> (yyVals[0+yyTop]);
+    }
+  break;
+case 19:
+#line 107 "Parser.jay"
+  {
+        yyVal = AppendList<TopLevelDecl> (yyVals[-1+yyTop], yyVals[0+yyTop]);
+    }
+  break;
+case 21:
+  case_21();
+  break;
+#line default
         }
         yyTop -= yyLen[yyN];
         yyState = yyStates[yyTop];
@@ -372,6 +425,14 @@ namespace Gone.Parser
 /*
  All more than 3 lines long rules are wrapped into a method
 */
+void case_21()
+#line 118 "Parser.jay"
+{
+        yyVal = TopLevelDecl.NewFunctionDecl (new FunctionDeclData (
+            (string)yyVals[-2+yyTop], (FunctionSignature)yyVals[-1+yyTop],
+            FSharpOption<BlockData>.Some ((BlockData)yyVals[0+yyTop])));
+    }
+
 #line default
    static readonly short [] yyLhs  = {              -1,
     0,    0,    0,    0,    1,    2,    2,    4,    4,    6,
@@ -495,7 +556,7 @@ namespace Gone.Parser
    -1,   -1,   -1,   -1,   -1,   -1,  266,  266,
   };
 
-#line 230 "Parser.jay"
+#line 260 "Parser.jay"
 
 
 }

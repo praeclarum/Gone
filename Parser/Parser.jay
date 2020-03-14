@@ -43,8 +43,13 @@ top_level_decl_list
     ;
 
 top_level_decl
-    : IDENTIFIER
+    : declaration
+    | function_decl
+    | method_decl
 	;
+
+
+
 
 %%
 

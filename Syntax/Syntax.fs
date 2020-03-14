@@ -9,8 +9,13 @@ type Location =
     }
 type Range = Location * Location
 
+type Statement =
+    | Block of BlockData
 
-
+and BlockData =
+    {
+        Statements : Statement[]
+    }
 
 type Identifier = string
 and IdentifierList = Identifier list
@@ -61,12 +66,39 @@ and FieldBody =
     | IdentifiedField of Identifier list * Type
     | EmbeddedField of TypeName
 
-
-type TopLevelDecl = 
+and FunctionSignature =
     {
-        Name : string
+        Parameters : Parameter[]
+        Result : FunctionResult
+    }
+and FunctionResult =
+    | ResultParameters of Parameters
+    | ResultType of Type
+
+and Parameters = Parameter[]
+and Parameter =
+    {
+        Identifiers : Identifier[]
+        ParameterType : Type
     }
 
+type FunctionDeclData =
+    {
+        Name : FunctionName
+        Signature : FunctionSignature
+        Body : FunctionBody option
+    }
+and FunctionName = Identifier
+and FunctionBody = BlockData
 
+type TopLevelDecl = 
+    | Declaration
+    | FunctionDecl of FunctionDeclData
+    | MethodDecl
+
+and Declaration =
+    | ConstDecl
+    | TypeDecl
+    | VarDecl
 
 

@@ -13,6 +13,8 @@ namespace Gone.Parser
         readonly int length;
         readonly string code;
 
+        public int CurrentIndex => p;
+
         public Lexer(string code)
         {
             this.code = code;

@@ -13,8 +13,19 @@ namespace Gone.Parser
         public Syntax.TopLevelDecl[] Parse(string code)
         {
             var lexer = new Lexer(code);
-            var r = yyparse(lexer);
-            return (Syntax.TopLevelDecl[])r;
+            try
+            {
+                var r = yyparse(lexer);
+                return (Syntax.TopLevelDecl[])r;
+            }
+            catch (yyParser.yyException ex)
+            {
+                var index = lexer.CurrentIndex;
+                var startIndex = Math.Max (0, index);
+                var endIndex = Math.Min(code.Length, index + 50);
+                var subcode = code.Substring(startIndex, endIndex - startIndex);
+                throw new Exception($"Bad syntax near:\n{subcode}", ex);
+            }
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text;
 
 namespace Gone.Parser
 {
@@ -61,6 +62,10 @@ namespace Gone.Parser
                 case ']':
                 case '{':
                 case '}':
+                case '.':
+                case ',':
+                case ':':
+                case ';':
                     tok = code[p];
                     p++;
                     break;
@@ -74,6 +79,30 @@ namespace Gone.Parser
                     {
                         tok = code[p];
                         p++;
+                    }
+                    break;
+                case '\"':
+                    {
+                        var b = new StringBuilder();
+                        var start = p;
+                        var end = start + 1;
+                        while (end < length && (code[end] != '\"'))
+                        {
+                            if (end + 1 < length && code[end] == '\\')
+                            {
+                                b.Append(code[end + 1]);
+                                end += 2;
+                            }
+                            else
+                            {
+                                b.Append(code[end]);
+                                end++;
+                            }
+                        }
+                        end++;
+                        val = b.ToString ();
+                        tok = TokenKind.STRING_LITERAL;
+                        p = end;
                     }
                     break;
                 default:

@@ -41,6 +41,6 @@ let LotsOTokens () =
 
     let tokens = Lexer.Tokenize code
 
-
-
-    Assert.Pass()
+    Assert.AreEqual(16, tokens.Length)
+    Assert.AreEqual(Parser.TokenKind.STRING_LITERAL, fst tokens.[3])
+    Assert.AreEqual("fmt", snd tokens.[3])

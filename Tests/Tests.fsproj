@@ -1,25 +1,22 @@
-<Project Sdk="Microsoft.NET.Sdk">
-
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
-
     <IsPackable>false</IsPackable>
     <GenerateProgramFile>false</GenerateProgramFile>
   </PropertyGroup>
-
   <ItemGroup>
     <PackageReference Include="nunit" Version="3.12.0" />
     <PackageReference Include="NUnit3TestAdapter" Version="3.15.1" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.4.0" />
   </ItemGroup>
-
   <ItemGroup>
     <Compile Include="UnitTest1.fs" />
+    <Compile Include="LexerTests.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
-
   <ItemGroup>
     <ProjectReference Include="..\Service\Service.fsproj" />
     <ProjectReference Include="..\Syntax\Syntax.fsproj" />
+    <ProjectReference Include="..\Parser\Parser.csproj" />
   </ItemGroup>
 </Project>

@@ -62,7 +62,10 @@ and FieldBody =
     | EmbeddedField of TypeName
 
 
-
+type TopLevelDecl = 
+    {
+        Name : string
+    }
 
 
 

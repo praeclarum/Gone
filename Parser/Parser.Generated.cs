@@ -92,7 +92,7 @@ namespace Gone.Parser
     "FLOATING_LITERAL","RUNE_LITERAL","STRING_LITERAL","BREAK","DEFAULT",
     "FUNC","INTERFACE","SELECT","CASE","DEFER","GO","MAP","STRUCT","CHAN",
     "ELSE","GOTO","PACKAGE","SWITCH","CONST","FALLTHROUGH","IF","RANGE",
-    "TYPE","CONTINUE","FOR","IMPORT","RETURN","VAR",
+    "TYPE","CONTINUE","FOR","IMPORT","RETURN","VAR","OP_PLUSEQ",
   };
 
   /** index-checked interface to yyNames[].
@@ -340,7 +340,7 @@ namespace Gone.Parser
     0,    3,
   };
 
-#line 48 "Parser.jay"
+#line 50 "Parser.jay"
 
 
 }
@@ -454,6 +454,7 @@ public class TokenKind {
   public const int IMPORT = 284;
   public const int RETURN = 285;
   public const int VAR = 286;
+  public const int OP_PLUSEQ = 287;
   public const int yyErrorCode = 256;
  }
  namespace yyParser {

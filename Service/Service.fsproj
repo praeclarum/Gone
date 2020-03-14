@@ -9,4 +9,8 @@
     <Compile Include="Compiler.fs" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Parser\Parser.csproj" />
+    <ProjectReference Include="..\Syntax\Syntax.fsproj" />
+  </ItemGroup>
 </Project>

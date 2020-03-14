@@ -25,6 +25,8 @@ namespace Gone.Parser
 %token CONST        FALLTHROUGH  IF           RANGE        TYPE
 %token CONTINUE     FOR          IMPORT       RETURN       VAR
 
+%token OP_PLUSEQ
+
 
 
 %start translation_unit

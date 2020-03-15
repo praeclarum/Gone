@@ -25,6 +25,8 @@ let IntroToGo () =
     	    fmt.Println("Hello, 世界")
         }""")
 
+    asm.Write ("/Users/fak/Desktop/Output.dll")
+
     let mainMod = asm.MainModule
     let packageType = mainMod.Types |> Seq.find (fun t -> t.Name = "main")
     Assert.AreEqual (2, packageType.Methods.Count)

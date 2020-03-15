@@ -5,6 +5,7 @@ open Gone.Parser
 
 
 open Mono.Cecil
+open Mono.Cecil.Cil
 
 type Env =
     {
@@ -15,6 +16,7 @@ type Env =
         VoidType : TypeReference
         Module : ModuleDefinition
     }
+    member this.Push () = this
 
 module Intermediate =
 
@@ -33,6 +35,7 @@ module Intermediate =
         }
 
     let rec buildItermediate (env : Env) (files : SourceFile[]) : CompiledPackage =
+
         let packageName = files.[0].Package
         let ns = "Packages"
         let tattrs =
@@ -78,7 +81,7 @@ module Intermediate =
                              ||| MethodAttributes.HideBySig
                 let method = new MethodDefinition (data.Name, mattrs, resultType)
                 for p in parameters do method.Parameters.Add p
-                let compileThisMethod () = compileMethod data method
+                let compileThisMethod () = compileMethod env data method
                 packageType.Methods.Add (method)
                 Some {
                     Name = data.Name
@@ -87,8 +90,35 @@ module Intermediate =
                 }
             | _ -> None)
 
-    and compileMethod data method : unit =
-        failwithf "I don't compile"
+    and compileMethod (topEnv : Env) (data : FunctionDeclData) (method : MethodDefinition) : unit =
+
+        let body = new MethodBody (method)
+        let il = body.GetILProcessor ()
+
+        let emit instruction =
+            il.Append (instruction)
+        let pop () = emit (il.Create (OpCodes.Pop))
+
+        let rec compileBlock (env : Env) (block : BlockData) =
+            for s in block.Statements do
+                compileStmt env s
+
+        and compileStmt (env : Env) (stmt : Statement) =
+            match stmt with
+            | Block b -> compileBlock (env.Push()) b
+            | ExpressionStmt e ->
+                compileExpression env e
+                pop ()
+
+        and compileExpression (env : Env) (expr : Expression) =
+            ()
+            failwithf "I don't know how to compile %A" expr
+
+        match data.Body with
+        | None -> failwithf "Can't compile function without a body %A" data
+        | Some fbody -> compileBlock topEnv fbody
+
+
 
 type Compiler () =
 
@@ -116,7 +146,8 @@ type Compiler () =
             }
         let intermediate = Intermediate.buildItermediate initialEnv files
 
-        asm.Write ("/Users/fak/Desktop/Output.dll")
+        intermediate.GlobalFunctions
+        |> Seq.iter (fun x -> x.CompileBody ())
 
         asm
 

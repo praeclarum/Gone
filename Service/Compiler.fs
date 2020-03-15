@@ -96,10 +96,6 @@ type Compiler () =
 
         let netstdPath = "/Users/fak/.nuget/packages/netstandard.library/2.0.0/build/netstandard2.0/ref/netstandard.dll"
         let netstd = AssemblyDefinition.ReadAssembly(netstdPath)
-        let lookupNetStdType (fullName : string) : TypeReference =
-            netstd.MainModule.Types
-            |> Seq.find(fun f -> f.FullName = fullName)
-            :> TypeReference
 
         let packageName = files.[0].Package
 
@@ -107,12 +103,20 @@ type Compiler () =
         let asm = AssemblyDefinition.CreateAssembly (asmName, packageName, ModuleKind.Dll)
 
         let m = asm.MainModule
+
+        let lookupNetStdType (fullName : string) : TypeReference =
+            netstd.MainModule.Types
+            |> Seq.find(fun f -> f.FullName = fullName)
+            |> m.ImportReference
+
         let initialEnv =
             {
                 Module = m
                 VoidType = lookupNetStdType "System.Void"
             }
         let intermediate = Intermediate.buildItermediate initialEnv files
+
+        asm.Write ("/Users/fak/Desktop/Output.dll")
 
         asm
 

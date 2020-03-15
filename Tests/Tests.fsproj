@@ -10,7 +10,7 @@
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.4.0" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="UnitTest1.fs" />
+    <Compile Include="CompilerTests.fs" />
     <Compile Include="LexerTests.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>

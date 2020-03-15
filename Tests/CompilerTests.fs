@@ -1,6 +1,6 @@
 module Tests
 
-open Gone
+open Gone.Service
 
 open NUnit.Framework
 
@@ -12,7 +12,7 @@ let Setup () =
 let IntroToGo () =
 
     let compiler = Compiler ()
-    compiler.Compile ("""
+    let asm = compiler.Compile ("""
         package main
     
         import "fmt"
@@ -21,4 +21,6 @@ let IntroToGo () =
     	    fmt.Println("Hello, 世界")
         }""")
 
-    Assert.Pass()
+    let mainMod = asm.MainModule
+    let packageType = mainMod.Types |> Seq.find (fun t -> t.Name = "main")
+    Assert.AreEqual (1, packageType.Methods.Count)

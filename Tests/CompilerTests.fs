@@ -1,8 +1,8 @@
 module Tests
 
 open Gone.Service
-
 open NUnit.Framework
+open System
 
 [<SetUp>]
 let Setup () =
@@ -25,7 +25,8 @@ let IntroToGo () =
     	    fmt.Println("Hello, 世界")
         }""")
 
-    asm.Write ("/Users/fak/Desktop/Output.dll")
+    let asmPath = IO.Path.Combine (Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "Output.dll")
+    asm.Write asmPath
 
     let mainMod = asm.MainModule
     let packageType = mainMod.Types |> Seq.find (fun t -> t.Name = "main")

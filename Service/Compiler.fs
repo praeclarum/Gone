@@ -6,6 +6,7 @@ open Gone.Parser
 
 open Mono.Cecil
 open Mono.Cecil.Cil
+open Mono.Cecil.Rocks
 
 type Env =
     {
@@ -13,8 +14,11 @@ type Env =
         //Imports : Map<string, Env>
         //Functions : Map<string, MethodReference>
 
-        VoidType : TypeReference
         Module : ModuleDefinition
+
+        VoidType : TypeReference
+        StringType : TypeReference
+        ConsoleType : TypeReference
     }
     member this.Push () = this
 
@@ -107,16 +111,40 @@ module Intermediate =
             match stmt with
             | Block b -> compileBlock (env.Push()) b
             | ExpressionStmt e ->
-                compileExpression env e
+                pushExpression env e
                 pop ()
 
-        and compileExpression (env : Env) (expr : Expression) =
-            ()
-            failwithf "I don't know how to compile %A" expr
+        and pushExpression (env : Env) (expr : Expression) =
+            match expr with
+            | CallExpr call ->
+                for a in call.Arguments do
+                   pushExpression env a 
+                let methodRef = pushFunction env call.Function
+                emit (il.Create (OpCodes.Call, methodRef))
+            | StringLit str ->
+                emit (il.Create (OpCodes.Ldstr, str))
+            | _ ->
+                failwithf "I don't know how to push expression %A" expr
+
+        and pushFunction (env : Env) (fexpr : Expression) : MethodReference =
+            match fexpr with
+            | SelectorExpr { Parent = VariableExpr { Name = "fmt" }; Name = "Println" } ->
+                let imr = new MethodReference ("WriteLine", env.VoidType, env.ConsoleType)
+                imr.Parameters.Add (new ParameterDefinition (env.StringType))
+                let mr = env.Module.ImportReference imr
+                mr
+            | SelectorExpr { Parent = VariableExpr { Name = varName }; Name = funName } ->
+                failwithf "I don't know how to find %A %A" varName funName
+            | _ -> failwithf "IDK %A" fexpr
 
         match data.Body with
         | None -> failwithf "Can't compile function without a body %A" data
-        | Some fbody -> compileBlock topEnv fbody
+        | Some fbody ->
+            compileBlock topEnv fbody
+            emit (il.Create (OpCodes.Ret))
+
+        body.OptimizeMacros ()
+        method.Body <- body
 
 
 
@@ -143,6 +171,8 @@ type Compiler () =
             {
                 Module = m
                 VoidType = lookupNetStdType "System.Void"
+                StringType = lookupNetStdType "System.String"
+                ConsoleType = lookupNetStdType "System.Console"
             }
         let intermediate = Intermediate.buildItermediate initialEnv files
 

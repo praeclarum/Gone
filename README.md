@@ -1,6 +1,6 @@
 # Gone
 
-Gone is the GO compiler for .NEt.
+Gone is the GO compiler for .NET.
 
 Come watch it be built: https://twitch.tv/FrankKrueger
 

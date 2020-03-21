@@ -9,99 +9,83 @@ open Mono.Cecil.Cil
 open Mono.Cecil.Rocks
 
 type Env =
-    {
-        //Types : Map<string, TypeReference>
-        //Imports : Map<string, Env>
-        //Functions : Map<string, MethodReference>
+    { //Types : Map<string, TypeReference>
+      //Imports : Map<string, Env>
+      //Functions : Map<string, MethodReference>
 
-        Module : ModuleDefinition
+      Module : ModuleDefinition
 
-        VoidType : TypeReference
-        StringType : TypeReference
-        ConsoleType : TypeReference
-    }
-    member this.Push () = this
+      VoidType : TypeReference
+      StringType : TypeReference
+      ConsoleType : TypeReference }
+    member this.Push() = this
 
 module Intermediate =
 
     type CompiledPackage =
-        {
-            Name : string
-            PackageType : TypeDefinition
-            GlobalFunctions : GlobalFunction[]
-        }
+        { Name : string
+          PackageType : TypeDefinition
+          GlobalFunctions : GlobalFunction [] }
 
     and GlobalFunction =
-        {
-            Name : string
-            Method : MethodDefinition
-            CompileBody : unit -> unit
-        }
+        { Name : string
+          Method : MethodDefinition
+          CompileBody : unit -> unit }
 
-    let rec buildItermediate (env : Env) (files : SourceFile[]) : CompiledPackage =
+    let rec buildItermediate (env : Env) (files : SourceFile []) : CompiledPackage =
 
         let packageName = files.[0].Package
         let ns = "Packages"
         let tattrs =
-            TypeAttributes.Public
-            ||| TypeAttributes.Abstract
-            ||| TypeAttributes.Sealed
+            TypeAttributes.Public ||| TypeAttributes.Abstract ||| TypeAttributes.Sealed
             ||| TypeAttributes.BeforeFieldInit
-        let packageType = new TypeDefinition (ns, packageName, tattrs)
-        env.Module.Types.Add (packageType)
+        let packageType = new TypeDefinition(ns, packageName, tattrs)
+        env.Module.Types.Add(packageType)
 
-        {
-            Name = files.[0].Package
-            PackageType = packageType
-            GlobalFunctions =
-                files
-                |> Array.collect (findFuncs env packageType)
-        }
+        { Name = files.[0].Package
+          PackageType = packageType
+          GlobalFunctions = files |> Array.collect (findFuncs env packageType) }
 
-    and clrTypeForGoType (env : Env) (typ : Type) : TypeReference =
-        failwithf "I never heard of %A" typ
+    and clrTypeForGoType (env : Env) (typ : Type) : TypeReference = failwithf "I never heard of %A" typ
 
     and clrTypeForFunctionResult (env : Env) (result : FunctionResult option) : TypeReference =
         match result with
-        | Some (ResultType t) -> clrTypeForGoType env t
+        | Some(ResultType t) -> clrTypeForGoType env t
         | None -> env.VoidType
         | _ -> failwithf "Can't find result type for %A" result
 
-    and findFuncs (env : Env) (packageType : TypeDefinition) (file : SourceFile) : GlobalFunction[] =
+    and findFuncs (env : Env) (packageType : TypeDefinition) (file : SourceFile) : GlobalFunction [] =
         file.Declarations
         |> Array.choose (function
             | FunctionDecl data ->
                 let s = data.Signature
                 let resultType = clrTypeForFunctionResult env s.Result
+
                 let parameters =
                     s.Parameters
                     |> Array.collect (fun p ->
                         let ptype = clrTypeForGoType env p.ParameterType
-                        p.Identifiers
-                        |> Array.map (fun pname ->
-                            new ParameterDefinition(ptype, Name = pname)))
-                let mattrs = MethodAttributes.Public
-                             ||| MethodAttributes.Static
-                             ||| MethodAttributes.HideBySig
-                let method = new MethodDefinition (data.Name, mattrs, resultType)
-                for p in parameters do method.Parameters.Add p
-                let compileThisMethod () = compileMethod env data method
-                packageType.Methods.Add (method)
-                Some {
-                    Name = data.Name
-                    Method = method
-                    CompileBody = compileThisMethod
-                }
+                        p.Identifiers |> Array.map (fun pname -> new ParameterDefinition(ptype, Name = pname)))
+
+                let mattrs = MethodAttributes.Public ||| MethodAttributes.Static ||| MethodAttributes.HideBySig
+                let method = new MethodDefinition(data.Name, mattrs, resultType)
+                for p in parameters do
+                    method.Parameters.Add p
+                let compileThisMethod() = compileMethod env data method
+                packageType.Methods.Add(method)
+                Some
+                    { Name = data.Name
+                      Method = method
+                      CompileBody = compileThisMethod }
             | _ -> None)
 
     and compileMethod (topEnv : Env) (data : FunctionDeclData) (method : MethodDefinition) : unit =
 
-        let body = new MethodBody (method)
-        let il = body.GetILProcessor ()
+        let body = new MethodBody(method)
+        let il = body.GetILProcessor()
 
-        let emit instruction =
-            il.Append (instruction)
-        let pop () = emit (il.Create (OpCodes.Pop))
+        let emit instruction = il.Append(instruction)
+        let pop() = emit (il.Create(OpCodes.Pop))
 
         let rec compileBlock (env : Env) (block : BlockData) =
             for s in block.Statements do
@@ -112,83 +96,82 @@ module Intermediate =
             | Block b -> compileBlock (env.Push()) b
             | ExpressionStmt e ->
                 pushExpression env e
-                pop ()
+                pop()
 
         and pushExpression (env : Env) (expr : Expression) =
             match expr with
             | CallExpr call ->
                 for a in call.Arguments do
-                   pushExpression env a 
+                    pushExpression env a
                 let methodRef = pushFunction env call.Function
-                emit (il.Create (OpCodes.Call, methodRef))
-            | StringLit str ->
-                emit (il.Create (OpCodes.Ldstr, str))
-            | _ ->
-                failwithf "I don't know how to push expression %A" expr
+                emit (il.Create(OpCodes.Call, methodRef))
+            | StringLit str -> emit (il.Create(OpCodes.Ldstr, str))
+            | _ -> failwithf "I don't know how to push expression %A" expr
 
         and pushFunction (env : Env) (fexpr : Expression) : MethodReference =
             match fexpr with
             | SelectorExpr { Parent = VariableExpr { Name = "fmt" }; Name = "Println" } ->
-                let imr = new MethodReference ("WriteLine", env.VoidType, env.ConsoleType)
-                imr.Parameters.Add (new ParameterDefinition (env.StringType))
+                let imr = new MethodReference("WriteLine", env.VoidType, env.ConsoleType)
+                imr.Parameters.Add(new ParameterDefinition(env.StringType))
                 let mr = env.Module.ImportReference imr
                 mr
             | SelectorExpr { Parent = VariableExpr { Name = varName }; Name = funName } ->
                 failwithf "I don't know how to find %A %A" varName funName
             | _ -> failwithf "IDK %A" fexpr
 
+
         match data.Body with
         | None -> failwithf "Can't compile function without a body %A" data
         | Some fbody ->
             compileBlock topEnv fbody
-            emit (il.Create (OpCodes.Ret))
+            emit (il.Create(OpCodes.Ret))
 
-        body.OptimizeMacros ()
+        body.OptimizeMacros()
         method.Body <- body
 
 
 
-type Compiler () =
+type Compiler() =
 
-    let compileFiles (files : SourceFile[]) =
+    let compileFiles (files : SourceFile []) =
 
-        let netstdPath = "/Users/fak/.nuget/packages/netstandard.library/2.0.0/build/netstandard2.0/ref/netstandard.dll"
+        let userDir = System.Environment.GetFolderPath(System.Environment.SpecialFolder.UserProfile)
+        let netstdPath =
+            System.IO.Path.Combine
+                (userDir, ".nuget", "packages", "netstandard.library", "2.0.0", "build", "netstandard2.0", "ref",
+                 "netstandard.dll")
         let netstd = AssemblyDefinition.ReadAssembly(netstdPath)
 
         let packageName = files.[0].Package
 
-        let asmName = AssemblyNameDefinition (packageName, new System.Version (1, 0))
-        let asm = AssemblyDefinition.CreateAssembly (asmName, packageName, ModuleKind.Dll)
+        let asmName = AssemblyNameDefinition(packageName, new System.Version(1, 0))
+        let asm = AssemblyDefinition.CreateAssembly(asmName, packageName, ModuleKind.Dll)
 
         let m = asm.MainModule
 
         let lookupNetStdType (fullName : string) : TypeReference =
             netstd.MainModule.Types
-            |> Seq.find(fun f -> f.FullName = fullName)
+            |> Seq.find (fun f -> f.FullName = fullName)
             |> m.ImportReference
 
         let initialEnv =
-            {
-                Module = m
-                VoidType = lookupNetStdType "System.Void"
-                StringType = lookupNetStdType "System.String"
-                ConsoleType = lookupNetStdType "System.Console"
-            }
+            { Module = m
+              VoidType = lookupNetStdType "System.Void"
+              StringType = lookupNetStdType "System.String"
+              ConsoleType = lookupNetStdType "System.Console" }
         let intermediate = Intermediate.buildItermediate initialEnv files
 
-        intermediate.GlobalFunctions
-        |> Seq.iter (fun x -> x.CompileBody ())
+        intermediate.GlobalFunctions |> Seq.iter (fun x -> x.CompileBody())
 
         asm
 
 
 
-    member this.Compile (code : string) : AssemblyDefinition =
+    member this.Compile(code : string) : AssemblyDefinition =
 
-        let parser = GoParser ()
+        let parser = GoParser()
 
         let sourceFile = parser.Parse code
 
         let r = compileFiles [| sourceFile |]
         r
-

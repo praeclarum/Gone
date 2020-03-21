@@ -16,8 +16,11 @@ type Env =
       Module : ModuleDefinition
 
       VoidType : TypeReference
+      ObjectType : TypeReference
       StringType : TypeReference
-      ConsoleType : TypeReference }
+      ConsoleType : TypeReference
+
+      PackageName : string }
     member this.Push() = this
 
 module Intermediate =
@@ -30,7 +33,8 @@ module Intermediate =
     and GlobalFunction =
         { Name : string
           Method : MethodDefinition
-          CompileBody : unit -> unit }
+          CompileBody : unit -> unit
+          PackageName : string }
 
     let rec buildItermediate (env : Env) (files : SourceFile []) : CompiledPackage =
 
@@ -40,6 +44,7 @@ module Intermediate =
             TypeAttributes.Public ||| TypeAttributes.Abstract ||| TypeAttributes.Sealed
             ||| TypeAttributes.BeforeFieldInit
         let packageType = new TypeDefinition(ns, packageName, tattrs)
+        packageType.BaseType <- env.ObjectType
         env.Module.Types.Add(packageType)
 
         { Name = files.[0].Package
@@ -76,7 +81,8 @@ module Intermediate =
                 Some
                     { Name = data.Name
                       Method = method
-                      CompileBody = compileThisMethod }
+                      CompileBody = compileThisMethod
+                      PackageName = env.PackageName }
             | _ -> None)
 
     and compileMethod (topEnv : Env) (data : FunctionDeclData) (method : MethodDefinition) : unit =
@@ -129,6 +135,14 @@ module Intermediate =
         body.OptimizeMacros()
         method.Body <- body
 
+    let designateEntryPoint (env : Env) (compiledPackage : CompiledPackage) =
+        let entryFunction =
+            compiledPackage.GlobalFunctions
+            |> Seq.find (fun f ->
+                f.Name = "main" && f.PackageName = "main")
+        //entryFunction.Method.Me
+        entryFunction.Method.Name <- "GoMain"
+        env.Module.EntryPoint <- entryFunction.Method
 
 
 type Compiler() =
@@ -155,13 +169,27 @@ type Compiler() =
             |> m.ImportReference
 
         let initialEnv =
-            { Module = m
+            { 
+              Module = m
               VoidType = lookupNetStdType "System.Void"
+              ObjectType = lookupNetStdType "System.Object"
               StringType = lookupNetStdType "System.String"
-              ConsoleType = lookupNetStdType "System.Console" }
-        let intermediate = Intermediate.buildItermediate initialEnv files
+              ConsoleType = lookupNetStdType "System.Console"
+              PackageName = packageName }
 
-        intermediate.GlobalFunctions |> Seq.iter (fun x -> x.CompileBody())
+        //
+        // Pass 1, find types and methods
+        //
+        let compiledPackage = Intermediate.buildItermediate initialEnv files
+
+        //
+        // Pass 1a, designate the entry point
+        //
+        Intermediate.designateEntryPoint initialEnv compiledPackage
+
+
+        // Pass 2, compile methods
+        compiledPackage.GlobalFunctions |> Seq.iter (fun x -> x.CompileBody())
 
         asm
 

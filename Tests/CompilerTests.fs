@@ -1,4 +1,4 @@
-module Tests
+module CompilerTests
 
 open Gone.Service
 open NUnit.Framework
@@ -28,6 +28,32 @@ let IntroToGo () =
     let asmPath = IO.Path.Combine (Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "Output.dll")
     asm.Write asmPath
 
+    let asmName = "TwoOutput.dll"
+    let asmPath = IO.Path.Combine (Environment.GetFolderPath(Environment.SpecialFolder.Desktop), asmName)
+    asm.Write asmPath
+
     let mainMod = asm.MainModule
     let packageType = mainMod.Types |> Seq.find (fun t -> t.Name = "main")
     Assert.AreEqual (2, packageType.Methods.Count)
+
+[<Test>]
+let EntryPoint () =
+
+    let compiler = Compiler ()
+    let asm = compiler.Compile ("""
+        package main
+
+        import "fmt"
+
+        func main() {
+            fmt.Println("Hello, 世界")
+        }""")
+
+    let asmName = "Output.dll"
+    let asmPath = IO.Path.Combine (Environment.GetFolderPath(Environment.SpecialFolder.Desktop), asmName)
+    asm.Write asmPath
+
+    let mainMod = asm.MainModule
+    let packageType = mainMod.Types |> Seq.find (fun t -> t.Name = "main")
+    Assert.AreEqual (1, packageType.Methods.Count)
+    Assert.NotNull (mainMod.EntryPoint)

@@ -25,9 +25,6 @@ let IntroToGo () =
     	    fmt.Println("Hello, 世界")
         }""")
 
-    let asmPath = IO.Path.Combine (Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "Output.dll")
-    asm.Write asmPath
-
     let asmName = "TwoOutput.dll"
     let asmPath = IO.Path.Combine (Environment.GetFolderPath(Environment.SpecialFolder.Desktop), asmName)
     asm.Write asmPath

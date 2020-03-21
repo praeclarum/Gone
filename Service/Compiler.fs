@@ -25,6 +25,10 @@ type Env =
 
 module Intermediate =
 
+    type StackResult =
+        | NoResult
+        | HasResult
+
     type CompiledPackage =
         { Name : string
           PackageType : TypeDefinition
@@ -101,17 +105,23 @@ module Intermediate =
             match stmt with
             | Block b -> compileBlock (env.Push()) b
             | ExpressionStmt e ->
-                pushExpression env e
-                pop()
+                match pushExpression env e with
+                | NoResult -> ()
+                | HasResult -> pop()
 
-        and pushExpression (env : Env) (expr : Expression) =
+        and pushExpression (env : Env) (expr : Expression) : StackResult =
             match expr with
             | CallExpr call ->
                 for a in call.Arguments do
-                    pushExpression env a
+                    pushExpression env a |> ignore
                 let methodRef = pushFunction env call.Function
                 emit (il.Create(OpCodes.Call, methodRef))
-            | StringLit str -> emit (il.Create(OpCodes.Ldstr, str))
+                match methodRef.ReturnType.FullName with
+                | "System.Void" -> NoResult
+                | _ -> HasResult
+            | StringLit str ->
+                emit (il.Create(OpCodes.Ldstr, str))
+                HasResult
             | _ -> failwithf "I don't know how to push expression %A" expr
 
         and pushFunction (env : Env) (fexpr : Expression) : MethodReference =
@@ -141,7 +151,7 @@ module Intermediate =
             |> Seq.find (fun f ->
                 f.Name = "main" && f.PackageName = "main")
         //entryFunction.Method.Me
-        entryFunction.Method.Name <- "GoMain"
+        //entryFunction.Method.Name <- "GoMain"
         env.Module.EntryPoint <- entryFunction.Method
 
 

@@ -11,7 +11,7 @@
 
 Links from the stream:
 
-- [ILSpy](https://github.com/icsharpcode/ILSpy)
+- [ILSpy](https://github.com/icsharpcode/ILSpy) and [ILSpy Command](https://www.nuget.org/packages/ilspycmd/)
 
 - [ILdasm](https://docs.microsoft.com/en-us/dotnet/framework/tools/ildasm-exe-il-disassembler)
 

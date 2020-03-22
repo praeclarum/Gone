@@ -65,7 +65,7 @@ Hello, 世界
 
 ## Show Notes
 
-- [Show Notes](ShowNotes.md)
+- [Show Notes](SHOWNOTES.md)
 
 ## Contact
 

@@ -1,68 +1,76 @@
 # Gone
 
-Gone is the GO compiler for .NET.
+[![Language: F#](https://img.shields.io/badge/language-fsharp-purple.svg)](https://fsharp.org/)
+[![Language: C#](https://img.shields.io/badge/language-csharp-purple.svg)](https://docs.microsoft.com/en-us/dotnet/csharp/)
+[![Language: Go](https://img.shields.io/badge/language-go-blue.svg)](https://golang.org/)
 
-Come watch it be built: https://twitch.tv/FrankKrueger
+Gone is the [GO](https://golang.org/) compiler for [.NET](https://dotnet.microsoft.com/).
+
+Come watch it being built: https://twitch.tv/FrankKrueger
+
+## Goal
+
+Build a compiler to parse the Go Lang:
+
+```go
+package main
+
+import "fmt"
+
+func main() {
+    fmt.Println("Hello, 世界")
+}
+```
 
 ## Building
 
-```
+```cmd
 dotnet build
 ```
 
 ### Modifying the Grammar
 
-If you modify Parser.jay, then please rebuild the parser with:
+If you modify [`Parser.jay`](Parser/Parser.jay), then please rebuild the parser with:
 
-```
+```cmd
 make
 ```
 
+### Output
 
-## Links for More Information
+After running the tests a file `Output.dll` is created on your desktop.
 
-Links from the stream
+- `~/Desktop/Output.dll`
 
-TODO: Add to README?
+Create a `config` file - `Output.runtimeconfig.json`:
 
-—-
+```json
+{
+  "runtimeOptions": {
+    "tfm": "netcoreapp3.1",
+    "framework": {
+      "name": "Microsoft.NETCore.App",
+      "version": "3.1.0"
+    }
+  }
+}
+```
 
-jay
+Then run the following command to see the compilier working:
 
-https://www.cs.rit.edu/~ats/projects/lp/doc/jay/package-summary.html
+```cmd
+dotnet ~/Desktop/Output.dll
+Hello, 世界
+```
 
-—-
+## Show Notes
 
-Algorithm W - or Hindley-Milner polymorphic type inference - in F#
+- [Show Notes](SHOWNOTES.md)
 
-https://gist.github.com/praeclarum/5fbef41ea9c296590f23
+## Contact
 
-—-
+Mostly @praeclarum.
 
-Structure and Interpretation of Computer Programs
-
-https://mitpress.mit.edu/sites/default/files/sicp/index.html
-
-The video lecture series that accompanies this book is on youtube too
-
-https://www.youtube.com/watch?v=-J_xL4IGhJA&list=PLE18841CABEA24090
-
-—-
-
-Cat Language
-
-https://github.com/cdiggins/cat-language
-
-—-
-
-UnrealScript reference: https://docs.unrealengine.com/udk/Two/UnrealScriptReference.html
-
---
-
-ECMA-335 (CLR) Standard: https://www.ecma-international.org/publications/standards/Ecma-335.htm contains a unified PDF with all the partitions.
-
-My Color Scheme: https://gist.github.com/praeclarum/f222d5c83ad373e8b57396663988640b
-
---
-
-D Language: https://dlang.org
+- [Twitter](https://twitter.com/praeclarum)
+- [Twitch](https://twitch.tv/FrankKrueger)
+- [YouTube](https://www.youtube.com/channel/UCFqpk9svseHIrsvshWSbDag)

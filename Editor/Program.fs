@@ -9,6 +9,7 @@ module GoneUIData =
 
     type Data =
         {
+            FilePath : string option
             SourceCode : string
             Error : string
             Ast : string
@@ -19,7 +20,8 @@ module GoneUIData =
         let updated = Event<_> ()
         let mutable data =
             {
-                SourceCode = "# Start typing here"
+                FilePath = None
+                SourceCode = ""
                 Error = ""
                 Ast = ""
                 DecompiledCode = ""
@@ -37,13 +39,11 @@ module GoneUIData =
                 d with SourceCode = code })
 
 
-module GoneUI =
+module Services =
 
     open GoneUIData
 
-    let data = GoneUIData.DataStore ()
-
-    let astService =
+    type AstService (data : DataStore) =
         let updateAst () : unit =
             data.Update (fun d ->
                 try
@@ -54,9 +54,29 @@ module GoneUI =
                 with ex ->
                     { d with Ast = ""; Error = string ex })
 
-        data.Updated.Add updateAst
-        updateAst ()
-        ()
+        do
+            data.Updated.Add updateAst
+            updateAst ()
+
+    type SaveService (data : DataStore) =
+        let saveFile () : unit =
+            let d = data.Data
+            match d.FilePath with
+            | None -> ()
+            | Some path ->
+                IO.File.WriteAllText (path, d.SourceCode)
+
+        do data.Updated.Add saveFile
+
+module GoneUI =
+
+    open GoneUIData
+    open Services
+
+    let data = GoneUIData.DataStore ()
+
+    let astService = AstService (data)
+    let saveService = SaveService (data)
 
     let textEditor =
         let text = new TextArea (Columns = 72, Rows = 12)
@@ -85,15 +105,24 @@ module GoneUI =
         text
 
     let astDisplay =
-        let text = new TextArea (Columns = 72, Rows = 36)
+        let text = new Div ()
+        text.Style.["white-space"] <- "pre"
         text.Style.FontFamily <- "Monaco"
-        text.Style.FontSize <- 16
+        text.Style.FontSize <- 12
         text.Text <- data.Data.Ast
         data.Updated.Add (fun () ->
             text.Text <- data.Data.Ast)
         text
 
-    let mainEditor =
+    let mainEditor fileToOpen =
+        let initialCode =
+            match fileToOpen with
+            | None -> "# No Code!"
+            | Some path -> IO.File.ReadAllText path
+        data.Update (fun d ->
+            { d with SourceCode = initialCode
+                     FilePath = fileToOpen })
+
         let h = new Heading (1, "TryGo.NET")
         Div (h, textEditor, errorDisplay, astDisplay)
 
@@ -115,7 +144,13 @@ module GoneUI =
 [<EntryPoint>]
 let main argv =
 
-    UI.Publish ("/", GoneUI.mainEditor)
+
+    let fileToOpen =
+        if argv.Length > 0 then
+            Some argv.[0]
+        else None
+
+    UI.Publish ("/", GoneUI.mainEditor fileToOpen)
 
     UI.Present ("/")
 

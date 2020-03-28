@@ -11,5 +11,11 @@
 
   <ItemGroup>
     <PackageReference Include="Ooui" Version="0.12.309" />
+    <PackageReference Update="FSharp.Core" Version="4.7.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Parser\Parser.csproj" />
+    <ProjectReference Include="..\Service\Service.fsproj" />
+    <ProjectReference Include="..\Syntax\Syntax.fsproj" />
   </ItemGroup>
 </Project>

@@ -118,7 +118,9 @@ module GoneUI =
         let initialCode =
             match fileToOpen with
             | None -> "# No Code!"
-            | Some path -> IO.File.ReadAllText path
+            | Some path ->
+                try IO.File.ReadAllText path
+                with _ -> "# Failed to read code"
         data.Update (fun d ->
             { d with SourceCode = initialCode
                      FilePath = fileToOpen })
@@ -139,14 +141,19 @@ module GoneUI =
 
 
 
-
+open System
 
 [<EntryPoint>]
 let main argv =
 
 
+    Console.WriteLine ("HI Y'ALL")
+
+    //for a in argv do
+        //Console.WriteLine ("COMMAND LINE: {0}", a)
+
     let fileToOpen =
-        if argv.Length > 0 then
+        if argv.Length > 0 && argv.[0].EndsWith (".go", StringComparison.InvariantCultureIgnoreCase) then
             Some argv.[0]
         else None
 

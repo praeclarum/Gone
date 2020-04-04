@@ -12,6 +12,7 @@
   <ItemGroup>
     <PackageReference Include="Ooui" Version="0.12.309" />
     <PackageReference Update="FSharp.Core" Version="4.7.0" />
+    <PackageReference Include="Ooui.Wasm" Version="0.12.309" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Parser\Parser.csproj" />

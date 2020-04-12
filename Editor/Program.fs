@@ -47,7 +47,7 @@ module Services =
         let updateAst () : unit =
             data.Update (fun d ->
                 try
-                    let parser = Gone.Parser.GoParser ()
+                    let parser = Gone.Parser ()
                     let ast = parser.Parse d.SourceCode
                     let stringAst = sprintf "%A" ast
                     { d with Ast = stringAst; Error = "" }
@@ -118,7 +118,9 @@ module GoneUI =
         let initialCode =
             match fileToOpen with
             | None -> "# No Code!"
-            | Some path -> IO.File.ReadAllText path
+            | Some path ->
+                try IO.File.ReadAllText path
+                with _ -> "# Failed to read code"
         data.Update (fun d ->
             { d with SourceCode = initialCode
                      FilePath = fileToOpen })
@@ -139,22 +141,33 @@ module GoneUI =
 
 
 
-
+open System
 
 [<EntryPoint>]
 let main argv =
 
 
+    Console.WriteLine ("HI Y'ALL 1")
+
+    //for a in argv do
+        //Console.WriteLine ("COMMAND LINE: {0}", a)
+
     let fileToOpen =
-        if argv.Length > 0 then
+        if argv.Length > 0 && argv.[0].EndsWith (".go", StringComparison.InvariantCultureIgnoreCase) then
             Some argv.[0]
         else None
 
+    Console.WriteLine ("HI Y'ALL 2")
+
     UI.Publish ("/", GoneUI.mainEditor fileToOpen)
 
-    UI.Present ("/")
+    Console.WriteLine ("HI Y'ALL 3")
 
-    while true do
-        Threading.Thread.Sleep(1000)
+    //UI.Present ("/")
+
+    Console.WriteLine ("HI Y'ALL 4")
+
+    //while true do
+        //Threading.Thread.Sleep(1000)
 
     0 // return an integer exit code

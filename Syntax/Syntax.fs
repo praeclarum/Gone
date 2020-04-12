@@ -32,9 +32,9 @@ type Statement =
 
 and BlockData =
     {
-        Statements : Statement[]
+        Statements : Statement list
     }
-    static member Empty = { Statements = [||] }
+    static member Empty = { Statements = [] }
 
 and Expression =
     | CallExpr of CallData
@@ -60,7 +60,7 @@ and SelectorData =
         Name : string
     }
 
-and ExpressionList = Expression[]
+and ExpressionList = Expression list
 
 
 
@@ -96,17 +96,17 @@ and FieldBody =
 
 and FunctionSignature =
     {
-        Parameters : Parameter[]
+        Parameters : Parameter list
         Result : FunctionResult option
     }
 and FunctionResult =
     | ResultParameters of Parameters
     | ResultType of Type
 
-and Parameters = Parameter[]
+and Parameters = Parameter list
 and Parameter =
     {
-        Identifiers : Identifier[]
+        Identifiers : Identifier list
         ParameterType : Type
     }
 
@@ -132,17 +132,17 @@ and Declaration =
 type SourceFile =
     {
         Package : PackageClause
-        Imports : ImportDecl[]
-        Declarations : TopLevelDecl[]
+        Imports : ImportDecl list
+        Declarations : TopLevelDecl list
     }
 
 and PackageClause = PackageName
 
 
-and ImportDecl = ImportSpec[]
+and ImportDecl = ImportSpec list
 and ImportSpec = 
     {
-        PackagePath : PackageName[]
+        PackagePath : PackageName list
         ImportPath : ImportPath
     }
 and ImportPath = string

@@ -1,12 +1,14 @@
 ﻿namespace Gone.Service
 
 open Gone.Syntax
-open Gone.Parser
-
 
 open Mono.Cecil
 open Mono.Cecil.Cil
 open Mono.Cecil.Rocks
+
+//module FrankFuncs =
+    //let ni () = raise (new System.NotImplementedException ())
+    //let wtf s = Printf.kprintf (fun x -> raise (new System.Exception (x))) s
 
 type Env =
     { //Types : Map<string, TypeReference>
@@ -32,7 +34,7 @@ module Intermediate =
     type CompiledPackage =
         { Name : string
           PackageType : TypeDefinition
-          GlobalFunctions : GlobalFunction [] }
+          GlobalFunctions : GlobalFunction list }
 
     and GlobalFunction =
         { Name : string
@@ -40,7 +42,7 @@ module Intermediate =
           CompileBody : unit -> unit
           PackageName : string }
 
-    let rec buildItermediate (env : Env) (files : SourceFile []) : CompiledPackage =
+    let rec buildItermediate (env : Env) (files : SourceFile list) : CompiledPackage =
 
         let packageName = files.[0].Package
         let ns = "Packages"
@@ -53,7 +55,7 @@ module Intermediate =
 
         { Name = files.[0].Package
           PackageType = packageType
-          GlobalFunctions = files |> Array.collect (findFuncs env packageType) }
+          GlobalFunctions = files |> List.collect (findFuncs env packageType) }
 
     and clrTypeForGoType (env : Env) (typ : Type) : TypeReference = failwithf "I never heard of %A" typ
 
@@ -63,18 +65,18 @@ module Intermediate =
         | None -> env.VoidType
         | _ -> failwithf "Can't find result type for %A" result
 
-    and findFuncs (env : Env) (packageType : TypeDefinition) (file : SourceFile) : GlobalFunction [] =
+    and findFuncs (env : Env) (packageType : TypeDefinition) (file : SourceFile) : GlobalFunction list =
         file.Declarations
-        |> Array.choose (function
+        |> List.choose (function
             | FunctionDecl data ->
                 let s = data.Signature
                 let resultType = clrTypeForFunctionResult env s.Result
 
                 let parameters =
                     s.Parameters
-                    |> Array.collect (fun p ->
+                    |> List.collect (fun p ->
                         let ptype = clrTypeForGoType env p.ParameterType
-                        p.Identifiers |> Array.map (fun pname -> new ParameterDefinition(ptype, Name = pname)))
+                        p.Identifiers |> List.map (fun pname -> new ParameterDefinition(ptype, Name = pname)))
 
                 let mattrs = MethodAttributes.Public ||| MethodAttributes.Static ||| MethodAttributes.HideBySig
                 let method = new MethodDefinition(data.Name, mattrs, resultType)
@@ -157,7 +159,7 @@ module Intermediate =
 
 type Compiler() =
 
-    let compileFiles (files : SourceFile []) =
+    let compileFiles (files : SourceFile list) =
 
         let userDir = System.Environment.GetFolderPath(System.Environment.SpecialFolder.UserProfile)
         let netstdPath =
@@ -207,9 +209,9 @@ type Compiler() =
 
     member this.Compile(code : string) : AssemblyDefinition =
 
-        let parser = GoParser()
+        let parser = Gone.Parser()
 
         let sourceFile = parser.Parse code
 
-        let r = compileFiles [| sourceFile |]
+        let r = compileFiles [ sourceFile ]
         r

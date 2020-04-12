@@ -1,0 +1,84 @@
+﻿{
+
+open System
+open System.Globalization
+open FSharp.Text.Lexing
+
+open Gone.GoParser
+
+let mutable lineNo = 1
+let mutable lastLineComment = 1
+
+let newline (lexbuf: LexBuffer<_>) =
+  lineNo <- lineNo + 1
+  lexbuf.StartPos <- lexbuf.StartPos.NextLine
+
+let lexeme (lexbuf: LexBuffer<_>) =
+  LexBuffer<_>.LexemeString (lexbuf)
+
+let setInitialPos (lexbuf : LexBuffer<_>) filename = 
+  lexbuf.EndPos <- { pos_bol = 0; pos_fname=filename; pos_cnum=0; pos_lnum=1 }
+
+let stringToFloatingLiteral (text : string) : float =
+    Double.Parse(text, CultureInfo.InvariantCulture)
+
+}
+
+// Regular expressions
+let digit = ['0'-'9']
+let whitespace = [' ' '\t' ]
+let newline = ('\n' | '\r' '\n')
+
+rule token = parse
+| whitespace	{ token lexbuf }
+| newline		{ newline lexbuf; token lexbuf }
+| "//"			{ singleLineComment lexbuf; token lexbuf }
+| "/*"			{ multiLineComment lexbuf; token lexbuf }
+| "if"			{ IF }
+| "else"		{ ELSE }
+| "for"			{ FOR }
+| "package"		{ PACKAGE }
+| "import"		{ IMPORT }
+| "func"		{ FUNC }
+| "="			{ EQ }
+| "&&"			{ AND }
+| "||"			{ OR }
+| "<"			{ LT }
+| ">"			{ GT }
+| "<="			{ LTEQ }
+| ">="			{ GTEQ }
+| "=="			{ EQEQ }
+| "!="			{ NEQ }
+| "."			{ DOT }
+| ","			{ COMMA }
+| ";"			{ SEMI }
+| ":"			{ COLON }
+| "%"			{ PERCENT }
+| "#"			{ HASH }
+| "*"			{ MUL }
+| "/"			{ DIV }
+| "+="			{ OP_PLUSEQ }
+| "+"			{ PLUS }
+| "-"			{ MINUS }
+| "!"			{ BANG }
+| "?"			{ QUESTION }
+| "{"			{ LCURLY }
+| "}"			{ RCURLY }
+| "["			{ LBRACKET }
+| "]"			{ RBRACKET }
+| "("			{ LPAREN }
+| ")"			{ RPAREN }
+| '"' [^'"']* '"'	{ let s = lexeme lexbuf in STRING_LITERAL(s.Substring (1, s.Length - 2)) }
+| ['_''$''a'-'z''A'-'Z']['_''$''a'-'z''A'-'Z''0'-'9']*	{ IDENTIFIER(lexeme lexbuf) }
+| ((digit+'.'digit+)|('.'digit+)|(digit+))(['e''E']digit+)?  { FLOATING_LITERAL (stringToFloatingLiteral (lexeme lexbuf)) }
+| eof           { EOF }
+
+and singleLineComment = parse
+| eof			{ () }
+| newline		{ newline lexbuf; () }
+| _				{ singleLineComment lexbuf }
+
+and multiLineComment = parse
+| "*/" | eof	{ () }
+| newline		{ newline lexbuf; multiLineComment lexbuf }
+| _				{ multiLineComment lexbuf }

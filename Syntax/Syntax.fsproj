@@ -11,11 +11,22 @@
     <DebugSymbols>true</DebugSymbols>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
-  <ItemGroup>
-    <Compile Include="Syntax.fs" />
-  </ItemGroup>
-
+    
   <ItemGroup>
     <PackageReference Update="FSharp.Core" Version="4.7.0" />
+    <PackageReference Include="FsLexYacc" Version="10.0.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <FsYacc Condition="true" Include="GoParser.fsy">
+      <OtherFlags>-v --module Gone.GoParser</OtherFlags>
+    </FsYacc>
+    <FsLex Include="GoLexer.fsl">
+      <OtherFlags>--module Gone.GoLexer --unicode</OtherFlags>
+    </FsLex>
+    <Compile Include="Syntax.fs" />
+    <Compile Include="GoParser.fs" />
+    <Compile Include="GoLexer.fs" />
+    <Compile Include="Parser.fs" />
+    <Compile Include="Lexer.fs" />
   </ItemGroup>
 </Project>

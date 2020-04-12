@@ -142,7 +142,7 @@ type nonTerminalId =
     | NONTERM_function_decl
     | NONTERM_function_body
     | NONTERM_function_signature
-    | NONTERM_result
+    | NONTERM_function_result
     | NONTERM_parameters
     | NONTERM_parameter_list
     | NONTERM_parameter_decl

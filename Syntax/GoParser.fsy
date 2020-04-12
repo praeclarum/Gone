@@ -59,7 +59,7 @@ import_decl_list
     }
     | import_decl_list import_decl
     {
-        $1 @ $2
+        $1 @ [$2]
     }
 
 import_decl
@@ -74,7 +74,7 @@ import_decl
 
 import_spec_list
     : import_spec { [ $1 ] }
-    | import_spec_list SEMI import_spec { $1 @ $3 }
+    | import_spec_list SEMI import_spec { $1 @ [$3] }
 
 import_spec
     : package_name_list import_path
@@ -91,7 +91,7 @@ import_path
 
 package_name_list
     : package_name { [ $1 ] }
-    | package_name_list DOT package_name { $1 @ $3 }
+    | package_name_list DOT package_name { $1 @ [$3] }
 
 package_name
     : PACKAGE_IDENTIFIER { $1 }
@@ -103,7 +103,7 @@ top_level_decl_list
     }
     | top_level_decl_list top_level_decl
     {
-        $1 @ $2
+        $1 @ [$2]
     }
 
 top_level_decl
@@ -136,7 +136,7 @@ function_body : block { $1 }
 //function_type   : FUNC function_signature
 
 function_signature
-    : parameters result
+    : parameters function_result
     {
         {
             Parameters = $1
@@ -151,9 +151,9 @@ function_signature
         }
     }
 
-result
-//    : parameters { $1 }
-    : gotype { $1 }
+function_result
+    : parameters { ResultParameters $1 }
+    | gotype { ResultType $1 }
 
 parameters
     : LPAREN parameter_list RPAREN
@@ -166,16 +166,25 @@ parameters
     }
 parameter_list
     : parameter_decl { [ $1 ] }
-    | parameter_list COMMA parameter_decl { $1 @ $3 }
+    | parameter_list COMMA parameter_decl { $1 @ [$3] }
 
 parameter_decl
-    : identifier_list OP_ELLIPSIS gotype { $3 }
-    | identifier_list gotype { $2 }
-    | gotype { $1 }
+    : identifier_list OP_ELLIPSIS gotype
+    {
+        { Identifiers = $1; ParameterType = $3 }
+    }
+    | identifier_list gotype
+    {
+        { Identifiers = $1; ParameterType = $2 }
+    }
+    | gotype
+    {
+        { Identifiers = []; ParameterType = $1 }
+    }
 
 identifier_list
     : IDENTIFIER { [ $1 ] }
-    | identifier_list COMMA IDENTIFIER { $1 @ $3 }
+    | identifier_list COMMA IDENTIFIER { $1 @ [$3] }
 
 block
     : LCURLY statement_list RCURLY
@@ -194,7 +203,7 @@ statement_list
     }
     | statement_list SEMI statement
     {
-        $1 @ $3
+        $1 @ [$3]
     }
 
 statement
@@ -281,12 +290,12 @@ expression_list
     }
     | expression_list COMMA expression
     {
-        $1 @ $3
+        $1 @ [$3]
     }
 
 gotype
     : type_name { $1 }
 
 type_name
-    : TYPE_IDENTIFIER { $1 }
+    : TYPE_IDENTIFIER { NamedType (IdentifiedType $1) }
 

@@ -20,8 +20,8 @@
       <OtherFlags>--module GoLexer --unicode</OtherFlags>
     </FsLex>
     <Compile Include="Syntax.fs" />
-    <Compile Include="GoLexer.fs" />
     <Compile Include="GoParser.fs" />
+    <Compile Include="GoLexer.fs" />
   </ItemGroup>
 
   <ItemGroup>

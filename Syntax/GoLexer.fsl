@@ -1,8 +1,10 @@
 ﻿{
+
 open System
 open System.Globalization
 open FSharp.Text.Lexing
 
+open GoParser
 
 let mutable lineNo = 1
 let mutable lastLineComment = 1

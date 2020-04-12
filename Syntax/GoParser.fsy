@@ -55,7 +55,7 @@ package_clause
 import_decl_list
     : import_decl
     {
-        [| $1 |]
+        [ $1 ]
     }
     | import_decl_list import_decl
     {
@@ -65,7 +65,7 @@ import_decl_list
 import_decl
     : IMPORT import_spec
     {
-        [| $2 |]
+        [ $2 ]
     }
     | IMPORT LPAREN import_spec_list RPAREN
     {
@@ -73,7 +73,7 @@ import_decl
     }
 
 import_spec_list
-    : import_spec { [| $1 |] }
+    : import_spec { [ $1 ] }
     | import_spec_list SEMI import_spec { $1 @ $3 }
 
 import_spec
@@ -83,14 +83,14 @@ import_spec
     }
     | import_path
     {
-        { PackagePath = [||]; ImportPath = $1 }
+        { PackagePath = []; ImportPath = $1 }
     }
 
 import_path
     : STRING_LITERAL { $1 }
 
 package_name_list
-    : package_name { [| $1 |] }
+    : package_name { [ $1 ] }
     | package_name_list DOT package_name { $1 @ $3 }
 
 package_name
@@ -99,7 +99,7 @@ package_name
 top_level_decl_list
     : top_level_decl
     {
-        [| $1 |]
+        [ $1 ]
     }
     | top_level_decl_list top_level_decl
     {
@@ -162,10 +162,10 @@ parameters
     }
     | LPAREN RPAREN
     {
-        [||]
+        []
     }
 parameter_list
-    : parameter_decl { [| $1 |] }
+    : parameter_decl { [ $1 ] }
     | parameter_list COMMA parameter_decl { $1 @ $3 }
 
 parameter_decl
@@ -174,7 +174,7 @@ parameter_decl
     | gotype { $1 }
 
 identifier_list
-    : IDENTIFIER { [| $1 |] }
+    : IDENTIFIER { [ $1 ] }
     | identifier_list COMMA IDENTIFIER { $1 @ $3 }
 
 block
@@ -184,13 +184,13 @@ block
     }
     | LCURLY RCURLY
     {
-        { Statements = [||] }
+        { Statements = [] }
     }
 
 statement_list
     : statement
     {
-        [| $1 |]
+        [ $1 ]
     }
     | statement_list SEMI statement
     {
@@ -243,7 +243,7 @@ operand_name
 qualified_ident
     : package_name DOT IDENTIFIER
     {
-        VariableExpr { Name = $3; Some $1 }
+        VariableExpr { Name = $3; Package = Some $1 }
     }
 
 literal
@@ -268,7 +268,7 @@ arguments
     }
     | LPAREN RPAREN
     {
-        [||]
+        []
     }
 
 inner_arguments
@@ -277,7 +277,7 @@ inner_arguments
 expression_list
     : expression
     {
-        [| $1 |]
+        [ $1 ]
     }
     | expression_list COMMA expression
     {

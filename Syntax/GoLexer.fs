@@ -1,10 +1,12 @@
 module GoLexer
 # 1 "GoLexer.fsl"
  
+
 open System
 open System.Globalization
 open FSharp.Text.Lexing
 
+open GoParser
 
 let mutable lineNo = 1
 let mutable lastLineComment = 1
@@ -20,7 +22,7 @@ let setInitialPos (lexbuf : LexBuffer<_>) filename =
   lexbuf.EndPos <- { pos_bol = 0; pos_fname=filename; pos_cnum=0; pos_lnum=1 }
 
 
-# 23 "GoLexer.fs"
+# 25 "GoLexer.fs"
 let trans : uint16[] array = 
     [| 
     (* State 0 *)
@@ -255,262 +257,262 @@ let rec _fslex_dummy () = _fslex_dummy()
 and token  lexbuf =
   match _fslex_tables.Interpret(13,lexbuf) with
   | 0 -> ( 
-# 28 "GoLexer.fsl"
+# 30 "GoLexer.fsl"
                               token lexbuf 
-# 260 "GoLexer.fs"
+# 262 "GoLexer.fs"
           )
   | 1 -> ( 
-# 29 "GoLexer.fsl"
+# 31 "GoLexer.fsl"
                             newline lexbuf; token lexbuf 
-# 265 "GoLexer.fs"
+# 267 "GoLexer.fs"
           )
   | 2 -> ( 
-# 30 "GoLexer.fsl"
+# 32 "GoLexer.fsl"
                           singleLineComment lexbuf; token lexbuf 
-# 270 "GoLexer.fs"
+# 272 "GoLexer.fs"
           )
   | 3 -> ( 
-# 31 "GoLexer.fsl"
+# 33 "GoLexer.fsl"
                           multiLineComment lexbuf; token lexbuf 
-# 275 "GoLexer.fs"
+# 277 "GoLexer.fs"
           )
   | 4 -> ( 
-# 32 "GoLexer.fsl"
+# 34 "GoLexer.fsl"
                                                    USE (lexeme lexbuf) 
-# 280 "GoLexer.fs"
+# 282 "GoLexer.fs"
           )
   | 5 -> ( 
-# 33 "GoLexer.fsl"
+# 35 "GoLexer.fsl"
                               FUNCTION 
-# 285 "GoLexer.fs"
+# 287 "GoLexer.fs"
           )
   | 6 -> ( 
-# 34 "GoLexer.fsl"
+# 36 "GoLexer.fsl"
                              MODULE 
-# 290 "GoLexer.fs"
+# 292 "GoLexer.fs"
           )
   | 7 -> ( 
-# 35 "GoLexer.fsl"
+# 37 "GoLexer.fsl"
                           IF 
-# 295 "GoLexer.fs"
+# 297 "GoLexer.fs"
           )
   | 8 -> ( 
-# 36 "GoLexer.fsl"
+# 38 "GoLexer.fsl"
                            ELSE 
-# 300 "GoLexer.fs"
+# 302 "GoLexer.fs"
           )
   | 9 -> ( 
-# 37 "GoLexer.fsl"
+# 39 "GoLexer.fsl"
                            FOR 
-# 305 "GoLexer.fs"
+# 307 "GoLexer.fs"
           )
   | 10 -> ( 
-# 38 "GoLexer.fsl"
+# 40 "GoLexer.fsl"
                            BOOL(true) 
-# 310 "GoLexer.fs"
+# 312 "GoLexer.fs"
           )
   | 11 -> ( 
-# 39 "GoLexer.fsl"
+# 41 "GoLexer.fsl"
                             BOOL(false) 
-# 315 "GoLexer.fs"
+# 317 "GoLexer.fs"
           )
   | 12 -> ( 
-# 40 "GoLexer.fsl"
+# 42 "GoLexer.fsl"
                          EQ 
-# 320 "GoLexer.fs"
+# 322 "GoLexer.fs"
           )
   | 13 -> ( 
-# 41 "GoLexer.fsl"
+# 43 "GoLexer.fsl"
                           AND 
-# 325 "GoLexer.fs"
+# 327 "GoLexer.fs"
           )
   | 14 -> ( 
-# 42 "GoLexer.fsl"
+# 44 "GoLexer.fsl"
                           OR 
-# 330 "GoLexer.fs"
+# 332 "GoLexer.fs"
           )
   | 15 -> ( 
-# 43 "GoLexer.fsl"
+# 45 "GoLexer.fsl"
                          LT 
-# 335 "GoLexer.fs"
+# 337 "GoLexer.fs"
           )
   | 16 -> ( 
-# 44 "GoLexer.fsl"
+# 46 "GoLexer.fsl"
                          GT 
-# 340 "GoLexer.fs"
+# 342 "GoLexer.fs"
           )
   | 17 -> ( 
-# 45 "GoLexer.fsl"
+# 47 "GoLexer.fsl"
                           LTEQ 
-# 345 "GoLexer.fs"
+# 347 "GoLexer.fs"
           )
   | 18 -> ( 
-# 46 "GoLexer.fsl"
+# 48 "GoLexer.fsl"
                           GTEQ 
-# 350 "GoLexer.fs"
+# 352 "GoLexer.fs"
           )
   | 19 -> ( 
-# 47 "GoLexer.fsl"
+# 49 "GoLexer.fsl"
                           EQEQ 
-# 355 "GoLexer.fs"
+# 357 "GoLexer.fs"
           )
   | 20 -> ( 
-# 48 "GoLexer.fsl"
+# 50 "GoLexer.fsl"
                           NEQ 
-# 360 "GoLexer.fs"
+# 362 "GoLexer.fs"
           )
   | 21 -> ( 
-# 49 "GoLexer.fsl"
+# 51 "GoLexer.fsl"
                          COMMA 
-# 365 "GoLexer.fs"
+# 367 "GoLexer.fs"
           )
   | 22 -> ( 
-# 50 "GoLexer.fsl"
+# 52 "GoLexer.fsl"
                          SEMI 
-# 370 "GoLexer.fs"
+# 372 "GoLexer.fs"
           )
   | 23 -> ( 
-# 51 "GoLexer.fsl"
+# 53 "GoLexer.fsl"
                          COLON 
-# 375 "GoLexer.fs"
+# 377 "GoLexer.fs"
           )
   | 24 -> ( 
-# 52 "GoLexer.fsl"
+# 54 "GoLexer.fsl"
                          PERCENT 
-# 380 "GoLexer.fs"
+# 382 "GoLexer.fs"
           )
   | 25 -> ( 
-# 53 "GoLexer.fsl"
+# 55 "GoLexer.fsl"
                          HASH 
-# 385 "GoLexer.fs"
+# 387 "GoLexer.fs"
           )
   | 26 -> ( 
-# 54 "GoLexer.fsl"
+# 56 "GoLexer.fsl"
                          MUL 
-# 390 "GoLexer.fs"
+# 392 "GoLexer.fs"
           )
   | 27 -> ( 
-# 55 "GoLexer.fsl"
+# 57 "GoLexer.fsl"
                          DIV 
-# 395 "GoLexer.fs"
+# 397 "GoLexer.fs"
           )
   | 28 -> ( 
-# 56 "GoLexer.fsl"
+# 58 "GoLexer.fsl"
                          PLUS 
-# 400 "GoLexer.fs"
+# 402 "GoLexer.fs"
           )
   | 29 -> ( 
-# 57 "GoLexer.fsl"
+# 59 "GoLexer.fsl"
                          MINUS 
-# 405 "GoLexer.fs"
+# 407 "GoLexer.fs"
           )
   | 30 -> ( 
-# 58 "GoLexer.fsl"
+# 60 "GoLexer.fsl"
                          BANG 
-# 410 "GoLexer.fs"
+# 412 "GoLexer.fs"
           )
   | 31 -> ( 
-# 59 "GoLexer.fsl"
+# 61 "GoLexer.fsl"
                          QUESTION 
-# 415 "GoLexer.fs"
+# 417 "GoLexer.fs"
           )
   | 32 -> ( 
-# 60 "GoLexer.fsl"
+# 62 "GoLexer.fsl"
                          LCURLY 
-# 420 "GoLexer.fs"
+# 422 "GoLexer.fs"
           )
   | 33 -> ( 
-# 61 "GoLexer.fsl"
+# 63 "GoLexer.fsl"
                          RCURLY 
-# 425 "GoLexer.fs"
+# 427 "GoLexer.fs"
           )
   | 34 -> ( 
-# 62 "GoLexer.fsl"
+# 64 "GoLexer.fsl"
                          LBRACKET 
-# 430 "GoLexer.fs"
+# 432 "GoLexer.fs"
           )
   | 35 -> ( 
-# 63 "GoLexer.fsl"
+# 65 "GoLexer.fsl"
                          RBRACKET 
-# 435 "GoLexer.fs"
+# 437 "GoLexer.fs"
           )
   | 36 -> ( 
-# 64 "GoLexer.fsl"
+# 66 "GoLexer.fsl"
                          LPAREN 
-# 440 "GoLexer.fs"
+# 442 "GoLexer.fs"
           )
   | 37 -> ( 
-# 65 "GoLexer.fsl"
+# 67 "GoLexer.fsl"
                          RPAREN 
-# 445 "GoLexer.fs"
+# 447 "GoLexer.fs"
           )
   | 38 -> ( 
-# 66 "GoLexer.fsl"
+# 68 "GoLexer.fsl"
                                    let s = lexeme lexbuf in STRING(s.Substring (1, s.Length - 2)) 
-# 450 "GoLexer.fs"
+# 452 "GoLexer.fs"
           )
   | 39 -> ( 
-# 67 "GoLexer.fsl"
+# 69 "GoLexer.fsl"
                                                                         ID(lexeme lexbuf) 
-# 455 "GoLexer.fs"
+# 457 "GoLexer.fs"
           )
   | 40 -> ( 
-# 68 "GoLexer.fsl"
+# 70 "GoLexer.fsl"
                                                                               ID(lexeme lexbuf) 
-# 460 "GoLexer.fs"
+# 462 "GoLexer.fs"
           )
   | 41 -> ( 
-# 69 "GoLexer.fsl"
+# 71 "GoLexer.fsl"
                                                                                              FLOAT (let s = lexeme lexbuf in (Double.Parse(s.Substring (0, s.Length-1), CultureInfo.InvariantCulture))*25.4) 
-# 465 "GoLexer.fs"
+# 467 "GoLexer.fs"
           )
   | 42 -> ( 
-# 70 "GoLexer.fsl"
+# 72 "GoLexer.fsl"
                                                          FLOAT (Double.Parse(lexeme lexbuf, CultureInfo.InvariantCulture)) 
-# 470 "GoLexer.fs"
+# 472 "GoLexer.fs"
           )
   | 43 -> ( 
-# 71 "GoLexer.fsl"
+# 73 "GoLexer.fsl"
                            EOF 
-# 475 "GoLexer.fs"
+# 477 "GoLexer.fs"
           )
   | _ -> failwith "token"
 // Rule singleLineComment
 and singleLineComment  lexbuf =
   match _fslex_tables.Interpret(7,lexbuf) with
   | 0 -> ( 
-# 74 "GoLexer.fsl"
+# 76 "GoLexer.fsl"
                          () 
-# 484 "GoLexer.fs"
+# 486 "GoLexer.fs"
           )
   | 1 -> ( 
-# 75 "GoLexer.fsl"
+# 77 "GoLexer.fsl"
                             newline lexbuf; () 
-# 489 "GoLexer.fs"
+# 491 "GoLexer.fs"
           )
   | 2 -> ( 
-# 76 "GoLexer.fsl"
+# 78 "GoLexer.fsl"
                         singleLineComment lexbuf 
-# 494 "GoLexer.fs"
+# 496 "GoLexer.fs"
           )
   | _ -> failwith "singleLineComment"
 // Rule multiLineComment
 and multiLineComment  lexbuf =
   match _fslex_tables.Interpret(0,lexbuf) with
   | 0 -> ( 
-# 79 "GoLexer.fsl"
+# 81 "GoLexer.fsl"
                               () 
-# 503 "GoLexer.fs"
+# 505 "GoLexer.fs"
           )
   | 1 -> ( 
-# 80 "GoLexer.fsl"
+# 82 "GoLexer.fsl"
                             newline lexbuf; multiLineComment lexbuf 
-# 508 "GoLexer.fs"
+# 510 "GoLexer.fs"
           )
   | 2 -> ( 
-# 81 "GoLexer.fsl"
+# 83 "GoLexer.fsl"
                         multiLineComment lexbuf 
-# 513 "GoLexer.fs"
+# 515 "GoLexer.fs"
           )
   | _ -> failwith "multiLineComment"
 

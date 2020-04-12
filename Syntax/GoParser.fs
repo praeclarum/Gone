@@ -570,7 +570,7 @@ let _fsyacc_reductions ()  =    [|
                    (
 # 57 "GoParser.fsy"
                           
-                             [| _1 |]
+                             [ _1 ]
                          
                    )
 # 57 "GoParser.fsy"
@@ -597,7 +597,7 @@ let _fsyacc_reductions ()  =    [|
                    (
 # 67 "GoParser.fsy"
                           
-                             [| _2 |]
+                             [ _2 ]
                          
                    )
 # 67 "GoParser.fsy"
@@ -622,7 +622,7 @@ let _fsyacc_reductions ()  =    [|
                 (
                    (
 # 76 "GoParser.fsy"
-                                         [| _1 |] 
+                                         [ _1 ] 
                    )
 # 76 "GoParser.fsy"
                  : 'import_spec_list));
@@ -660,7 +660,7 @@ let _fsyacc_reductions ()  =    [|
                    (
 # 85 "GoParser.fsy"
                           
-                             { PackagePath = [||]; ImportPath = _1 }
+                             { PackagePath = []; ImportPath = _1 }
                          
                    )
 # 85 "GoParser.fsy"
@@ -683,7 +683,7 @@ let _fsyacc_reductions ()  =    [|
                 (
                    (
 # 93 "GoParser.fsy"
-                                          [| _1 |] 
+                                          [ _1 ] 
                    )
 # 93 "GoParser.fsy"
                  : 'package_name_list));
@@ -718,7 +718,7 @@ let _fsyacc_reductions ()  =    [|
                    (
 # 101 "GoParser.fsy"
                           
-                             [| _1 |]
+                             [ _1 ]
                          
                    )
 # 101 "GoParser.fsy"
@@ -862,7 +862,7 @@ let _fsyacc_reductions ()  =    [|
                    (
 # 164 "GoParser.fsy"
                           
-                             [||]
+                             []
                          
                    )
 # 164 "GoParser.fsy"
@@ -874,7 +874,7 @@ let _fsyacc_reductions ()  =    [|
                 (
                    (
 # 168 "GoParser.fsy"
-                                            [| _1 |] 
+                                            [ _1 ] 
                    )
 # 168 "GoParser.fsy"
                  : 'parameter_list));
@@ -932,7 +932,7 @@ let _fsyacc_reductions ()  =    [|
                 (
                    (
 # 177 "GoParser.fsy"
-                                        [| _1 |] 
+                                        [ _1 ] 
                    )
 # 177 "GoParser.fsy"
                  : 'identifier_list));
@@ -968,7 +968,7 @@ let _fsyacc_reductions ()  =    [|
                    (
 # 186 "GoParser.fsy"
                           
-                             { Statements = [||] }
+                             { Statements = [] }
                          
                    )
 # 186 "GoParser.fsy"
@@ -981,7 +981,7 @@ let _fsyacc_reductions ()  =    [|
                    (
 # 192 "GoParser.fsy"
                           
-                             [| _1 |]
+                             [ _1 ]
                          
                    )
 # 192 "GoParser.fsy"
@@ -1153,7 +1153,7 @@ let _fsyacc_reductions ()  =    [|
                    (
 # 245 "GoParser.fsy"
                           
-                             VariableExpr { Name = _3; Some _1 }
+                             VariableExpr { Name = _3; Package = Some _1 }
                          
                    )
 # 245 "GoParser.fsy"
@@ -1215,7 +1215,7 @@ let _fsyacc_reductions ()  =    [|
                    (
 # 270 "GoParser.fsy"
                           
-                             [||]
+                             []
                          
                    )
 # 270 "GoParser.fsy"
@@ -1239,7 +1239,7 @@ let _fsyacc_reductions ()  =    [|
                    (
 # 279 "GoParser.fsy"
                           
-                             [| _1 |]
+                             [ _1 ]
                          
                    )
 # 279 "GoParser.fsy"

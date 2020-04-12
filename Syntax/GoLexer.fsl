@@ -31,14 +31,9 @@ rule token = parse
 | newline		{ newline lexbuf; token lexbuf }
 | "//"			{ singleLineComment lexbuf; token lexbuf }
 | "/*"			{ multiLineComment lexbuf; token lexbuf }
-| "use"whitespace*"<"[^'>']+">"			{ USE (lexeme lexbuf) }
-| "function"	{ FUNCTION }
-| "module"		{ MODULE }
 | "if"			{ IF }
 | "else"		{ ELSE }
 | "for"			{ FOR }
-| "true"		{ BOOL(true) }
-| "false"		{ BOOL(false) }
 | "="			{ EQ }
 | "&&"			{ AND }
 | "||"			{ OR }
@@ -65,12 +60,9 @@ rule token = parse
 | "]"			{ RBRACKET }
 | "("			{ LPAREN }
 | ")"			{ RPAREN }
-| '"' [^'"']* '"'	{ let s = lexeme lexbuf in STRING(s.Substring (1, s.Length - 2)) }
-| ['_''$''a'-'z''A'-'Z']['_''$''a'-'z''A'-'Z''0'-'9']*	{ ID(lexeme lexbuf) }
-| digit*['_''$''a'-'z''A'-'Z']['_''$''a'-'z''A'-'Z''0'-'9']*	{ ID(lexeme lexbuf) }
-| ((digit+'.'digit+)|('.'digit+)|(digit+))(['e''E']digit+)? whitespace* '"' { FLOAT (let s = lexeme lexbuf in (Double.Parse(s.Substring (0, s.Length-1), CultureInfo.InvariantCulture))*25.4) }
-| digit*('.'digit+)?(['e''E']digit+)?   { FLOAT (Double.Parse(lexeme lexbuf, CultureInfo.InvariantCulture)) }
-| eof   		{ EOF }
+| '"' [^'"']* '"'	{ let s = lexeme lexbuf in STRING_LITERAL(s.Substring (1, s.Length - 2)) }
+| ['_''$''a'-'z''A'-'Z']['_''$''a'-'z''A'-'Z''0'-'9']*	{ IDENTIFIER(lexeme lexbuf) }
+| digit*('.'digit+)?(['e''E']digit+)?   { FLOATING_LITERAL (Double.Parse(lexeme lexbuf, CultureInfo.InvariantCulture)) }
 
 and singleLineComment = parse
 | eof			{ () }

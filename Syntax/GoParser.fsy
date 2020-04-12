@@ -1,4 +1,7 @@
 %{
+
+open Gone.Syntax
+
 %}
 
 %start source_file
@@ -29,8 +32,16 @@
 source_file
     : package_clause import_decl_list top_level_decl_list
     {
-        SourceFile ($1, $2, $3)
+        {
+            Package = $1
+            Imports = $2
+            Declarations = $3
+        }
     }
+    
+
+
+
 //    | package_clause import_decl_list
 //    | package_clause top_level_decl_list
 //    | package_clause
@@ -68,11 +79,11 @@ import_spec_list
 import_spec
     : package_name_list import_path
     {
-        ImportSpec($1, $2)
+        { PackagePath = $1; ImportPath = $2 }
     }
     | import_path
     {
-        ImportSpec([||], $1)
+        { PackagePath = [||]; ImportPath = $1 }
     }
 
 import_path
@@ -103,19 +114,21 @@ top_level_decl
 function_decl
     : FUNC IDENTIFIER function_signature function_body
     {
-        FunctionDecl {
-            Name = $2
-            Signature = $3
-            Body = Some $4
-        }
+        FunctionDecl
+            {
+                Name = $2
+                Signature = $3
+                Body = Some $4
+            }
     }
     | FUNC IDENTIFIER function_signature
     {
-        FunctionDecl {
-            Name = $2
-            Signature = $3
-            Body = None
-        }
+        FunctionDecl
+            {
+                Name = $2
+                Signature = $3
+                Body = None
+            }
     }
 
 function_body : block { $1 }
@@ -125,19 +138,23 @@ function_body : block { $1 }
 function_signature
     : parameters result
     {
-        { Parameters = $1
-          Result = Some $2
+        {
+            Parameters = $1
+            Result = Some $2
         }
     }
     | parameters
     {
-        { Parameters = $1
-          Result = None
+        {
+            Parameters = $1
+            Result = None
         }
     }
+
 result
-    : parameters { $1 }
-    | type { $1 }
+//    : parameters { $1 }
+    : gotype { $1 }
+
 parameters
     : LPAREN parameter_list RPAREN
     {
@@ -152,9 +169,9 @@ parameter_list
     | parameter_list COMMA parameter_decl { $1 @ $3 }
 
 parameter_decl
-    : identifier_list OP_ELLIPSIS type { $3 }
-    | identifier_list type { $2 }
-    | type { $1 }
+    : identifier_list OP_ELLIPSIS gotype { $3 }
+    | identifier_list gotype { $2 }
+    | gotype { $1 }
 
 identifier_list
     : IDENTIFIER { [| $1 |] }
@@ -254,10 +271,8 @@ arguments
         [||]
     }
 
-// ( ExpressionList | Type [ "," ExpressionList ] ) [ "..." ] [ "," ]
 inner_arguments
     : expression_list { $1 }
-    //: [ ( ExpressionList | Type [ "," ExpressionList ] ) [ "..." ] [ "," ] ]
 
 expression_list
     : expression
@@ -269,32 +284,9 @@ expression_list
         $1 @ $3
     }
 
-type
+gotype
     : type_name { $1 }
 
 type_name
     : TYPE_IDENTIFIER { $1 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-%%
-
-
-}
-
-
 

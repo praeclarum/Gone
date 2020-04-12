@@ -1,0 +1,300 @@
+%{
+%}
+
+%start source_file
+
+%token <string> IDENTIFIER TYPE_IDENTIFIER PACKAGE_IDENTIFIER
+%token <int> INTEGER_LITERAL
+%token <float> FLOATING_LITERAL
+%token <char> RUNE_LITERAL
+%token <string> STRING_LITERAL
+
+%token BREAK        DEFAULT      FUNC         INTERFACE    SELECT
+%token CASE         DEFER        GO           MAP          STRUCT
+%token CHAN         ELSE         GOTO         PACKAGE      SWITCH
+%token CONST        FALLTHROUGH  IF           RANGE        TYPE
+%token CONTINUE     FOR          IMPORT       RETURN       VAR
+
+%token OP_PLUSEQ OP_ELLIPSIS
+
+%token EQ COMMA SEMI COLON DOT
+%token LBRACKET RBRACKET LCURLY RCURLY LPAREN RPAREN
+%token BANG QUESTION HASH PERCENT
+%token MUL DIV PLUS MINUS LT GT LTEQ GTEQ EQEQ NEQ OR AND
+
+%type <SourceFile> source_file
+
+%%
+
+source_file
+    : package_clause import_decl_list top_level_decl_list
+    {
+        SourceFile ($1, $2, $3)
+    }
+//    | package_clause import_decl_list
+//    | package_clause top_level_decl_list
+//    | package_clause
+
+package_clause
+    : PACKAGE IDENTIFIER
+    {
+        $2
+    }
+
+import_decl_list
+    : import_decl
+    {
+        [| $1 |]
+    }
+    | import_decl_list import_decl
+    {
+        $1 @ $2
+    }
+
+import_decl
+    : IMPORT import_spec
+    {
+        [| $2 |]
+    }
+    | IMPORT LPAREN import_spec_list RPAREN
+    {
+        $3
+    }
+
+import_spec_list
+    : import_spec { [| $1 |] }
+    | import_spec_list SEMI import_spec { $1 @ $3 }
+
+import_spec
+    : package_name_list import_path
+    {
+        ImportSpec($1, $2)
+    }
+    | import_path
+    {
+        ImportSpec([||], $1)
+    }
+
+import_path
+    : STRING_LITERAL { $1 }
+
+package_name_list
+    : package_name { [| $1 |] }
+    | package_name_list DOT package_name { $1 @ $3 }
+
+package_name
+    : PACKAGE_IDENTIFIER { $1 }
+
+top_level_decl_list
+    : top_level_decl
+    {
+        [| $1 |]
+    }
+    | top_level_decl_list top_level_decl
+    {
+        $1 @ $2
+    }
+
+top_level_decl
+    //: declaration
+    : function_decl { $1 }
+    //| method_decl
+
+function_decl
+    : FUNC IDENTIFIER function_signature function_body
+    {
+        FunctionDecl {
+            Name = $2
+            Signature = $3
+            Body = Some $4
+        }
+    }
+    | FUNC IDENTIFIER function_signature
+    {
+        FunctionDecl {
+            Name = $2
+            Signature = $3
+            Body = None
+        }
+    }
+
+function_body : block { $1 }
+
+//function_type   : FUNC function_signature
+
+function_signature
+    : parameters result
+    {
+        { Parameters = $1
+          Result = Some $2
+        }
+    }
+    | parameters
+    {
+        { Parameters = $1
+          Result = None
+        }
+    }
+result
+    : parameters { $1 }
+    | type { $1 }
+parameters
+    : LPAREN parameter_list RPAREN
+    {
+        $2
+    }
+    | LPAREN RPAREN
+    {
+        [||]
+    }
+parameter_list
+    : parameter_decl { [| $1 |] }
+    | parameter_list COMMA parameter_decl { $1 @ $3 }
+
+parameter_decl
+    : identifier_list OP_ELLIPSIS type { $3 }
+    | identifier_list type { $2 }
+    | type { $1 }
+
+identifier_list
+    : IDENTIFIER { [| $1 |] }
+    | identifier_list COMMA IDENTIFIER { $1 @ $3 }
+
+block
+    : LCURLY statement_list RCURLY
+    {
+        { Statements = $2 }
+    }
+    | LCURLY RCURLY
+    {
+        { Statements = [||] }
+    }
+
+statement_list
+    : statement
+    {
+        [| $1 |]
+    }
+    | statement_list SEMI statement
+    {
+        $1 @ $3
+    }
+
+statement
+    : simple_stmt { $1 }
+
+simple_stmt
+    : expression_stmt { $1 }
+
+expression_stmt
+    : expression
+    {
+        ExpressionStmt $1
+    }
+
+expression
+    : unary_expr { $1 }
+
+unary_expr
+    : primary_expr { $1 }
+
+primary_expr
+    : primary_expr arguments
+    {
+        CallExpr { Function = $1; Arguments = $2 }
+    }
+    | primary_expr selector
+    {
+        SelectorExpr { Parent = $1; Name = $2 }
+    }
+    | operand
+    {
+        $1
+    }
+
+operand
+    : literal { $1 }
+    | operand_name { $1 }
+
+operand_name
+    : IDENTIFIER
+    {
+        VariableExpr { Name = $1; Package = None }
+    }
+    | qualified_ident { $1 }
+
+qualified_ident
+    : package_name DOT IDENTIFIER
+    {
+        VariableExpr { Name = $3; Some $1 }
+    }
+
+literal
+    : basic_literal { $1 }
+
+basic_literal
+    : STRING_LITERAL
+    {
+        StringLit $1
+    }
+
+selector
+    : DOT IDENTIFIER
+    {
+        $2
+    }
+
+arguments
+    : LPAREN inner_arguments RPAREN
+    {
+        $2
+    }
+    | LPAREN RPAREN
+    {
+        [||]
+    }
+
+// ( ExpressionList | Type [ "," ExpressionList ] ) [ "..." ] [ "," ]
+inner_arguments
+    : expression_list { $1 }
+    //: [ ( ExpressionList | Type [ "," ExpressionList ] ) [ "..." ] [ "," ] ]
+
+expression_list
+    : expression
+    {
+        [| $1 |]
+    }
+    | expression_list COMMA expression
+    {
+        $1 @ $3
+    }
+
+type
+    : type_name { $1 }
+
+type_name
+    : TYPE_IDENTIFIER { $1 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+%%
+
+
+}
+
+
+

@@ -147,7 +147,7 @@ open System
 let main argv =
 
 
-    Console.WriteLine ("HI Y'ALL")
+    Console.WriteLine ("HI Y'ALL 1")
 
     //for a in argv do
         //Console.WriteLine ("COMMAND LINE: {0}", a)
@@ -157,11 +157,17 @@ let main argv =
             Some argv.[0]
         else None
 
+    Console.WriteLine ("HI Y'ALL 2")
+
     UI.Publish ("/", GoneUI.mainEditor fileToOpen)
 
-    UI.Present ("/")
+    Console.WriteLine ("HI Y'ALL 3")
 
-    while true do
-        Threading.Thread.Sleep(1000)
+    //UI.Present ("/")
+
+    Console.WriteLine ("HI Y'ALL 4")
+
+    //while true do
+        //Threading.Thread.Sleep(1000)
 
     0 // return an integer exit code

@@ -27,6 +27,8 @@ open Gone.Syntax
 
 %type <SourceFile> source_file
 
+%token EOF
+
 %%
 
 source_file

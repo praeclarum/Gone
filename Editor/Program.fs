@@ -47,7 +47,7 @@ module Services =
         let updateAst () : unit =
             data.Update (fun d ->
                 try
-                    let parser = Gone.Parser.GoParser ()
+                    let parser = Gone.Parser ()
                     let ast = parser.Parse d.SourceCode
                     let stringAst = sprintf "%A" ast
                     { d with Ast = stringAst; Error = "" }

@@ -16,7 +16,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Parser\Parser.csproj" />
     <ProjectReference Include="..\Syntax\Syntax.fsproj" />
   </ItemGroup>
   <ItemGroup>

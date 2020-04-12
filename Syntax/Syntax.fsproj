@@ -13,21 +13,20 @@
   </PropertyGroup>
     
   <ItemGroup>
+    <PackageReference Update="FSharp.Core" Version="4.7.0" />
+    <PackageReference Include="FsLexYacc" Version="10.0.0" />
+  </ItemGroup>
+  <ItemGroup>
     <FsYacc Condition="true" Include="GoParser.fsy">
-      <OtherFlags>-v --module GoParser</OtherFlags>
+      <OtherFlags>-v --module Gone.GoParser</OtherFlags>
     </FsYacc>
     <FsLex Include="GoLexer.fsl">
-      <OtherFlags>--module GoLexer --unicode</OtherFlags>
+      <OtherFlags>--module Gone.GoLexer --unicode</OtherFlags>
     </FsLex>
     <Compile Include="Syntax.fs" />
     <Compile Include="GoParser.fs" />
     <Compile Include="GoLexer.fs" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="FsLexYacc" Version="10.0.0" />
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Update="FSharp.Core" Version="4.7.0" />
+    <Compile Include="Parser.fs" />
+    <Compile Include="Lexer.fs" />
   </ItemGroup>
 </Project>

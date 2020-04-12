@@ -17,6 +17,5 @@
   <ItemGroup>
     <ProjectReference Include="..\Service\Service.fsproj" />
     <ProjectReference Include="..\Syntax\Syntax.fsproj" />
-    <ProjectReference Include="..\Parser\Parser.csproj" />
   </ItemGroup>
 </Project>

@@ -4,7 +4,7 @@ open System
 open System.Globalization
 open FSharp.Text.Lexing
 
-open GoParser
+open Gone.GoParser
 
 let mutable lineNo = 1
 let mutable lastLineComment = 1
@@ -18,6 +18,9 @@ let lexeme (lexbuf: LexBuffer<_>) =
 
 let setInitialPos (lexbuf : LexBuffer<_>) filename = 
   lexbuf.EndPos <- { pos_bol = 0; pos_fname=filename; pos_cnum=0; pos_lnum=1 }
+
+let stringToFloatingLiteral (text : string) : float =
+    Double.Parse(text, CultureInfo.InvariantCulture)
 
 }
 
@@ -34,6 +37,9 @@ rule token = parse
 | "if"			{ IF }
 | "else"		{ ELSE }
 | "for"			{ FOR }
+| "package"		{ PACKAGE }
+| "import"		{ IMPORT }
+| "func"		{ FUNC }
 | "="			{ EQ }
 | "&&"			{ AND }
 | "||"			{ OR }
@@ -43,6 +49,7 @@ rule token = parse
 | ">="			{ GTEQ }
 | "=="			{ EQEQ }
 | "!="			{ NEQ }
+| "."			{ DOT }
 | ","			{ COMMA }
 | ";"			{ SEMI }
 | ":"			{ COLON }
@@ -50,6 +57,7 @@ rule token = parse
 | "#"			{ HASH }
 | "*"			{ MUL }
 | "/"			{ DIV }
+| "+="			{ OP_PLUSEQ }
 | "+"			{ PLUS }
 | "-"			{ MINUS }
 | "!"			{ BANG }
@@ -62,7 +70,8 @@ rule token = parse
 | ")"			{ RPAREN }
 | '"' [^'"']* '"'	{ let s = lexeme lexbuf in STRING_LITERAL(s.Substring (1, s.Length - 2)) }
 | ['_''$''a'-'z''A'-'Z']['_''$''a'-'z''A'-'Z''0'-'9']*	{ IDENTIFIER(lexeme lexbuf) }
-| digit*('.'digit+)?(['e''E']digit+)?   { FLOATING_LITERAL (Double.Parse(lexeme lexbuf, CultureInfo.InvariantCulture)) }
+| ((digit+'.'digit+)|('.'digit+)|(digit+))(['e''E']digit+)?  { FLOATING_LITERAL (stringToFloatingLiteral (lexeme lexbuf)) }
+| eof           { EOF }
 
 and singleLineComment = parse
 | eof			{ () }

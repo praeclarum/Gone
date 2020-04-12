@@ -12,7 +12,7 @@ let Setup () =
 let IntroToGo () =
 
     let compiler = Compiler ()
-    let asm = compiler.Compile ("""
+    let code = """
         package main
 
         import "fmt"
@@ -23,7 +23,13 @@ let IntroToGo () =
     
         func main() {
     	    fmt.Println("Hello, 世界")
-        }""")
+        }"""
+
+    let tokens = Gone.Lexer.Tokenize code
+    for t in tokens do
+        printfn "T %A" t
+
+    let asm = compiler.Compile (code)
 
     let asmName = "TwoOutput.dll"
     let asmPath = IO.Path.Combine (Environment.GetFolderPath(Environment.SpecialFolder.Desktop), asmName)

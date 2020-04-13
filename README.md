@@ -29,7 +29,7 @@ dotnet build
 
 ### Modifying the Grammar
 
-
+Update [GoParser.fsy](Syntax/GoParser.fsy) and [GoParser.fsi](Syntax/GoParser.fsi) and rebuild.
 
 ### Output
 

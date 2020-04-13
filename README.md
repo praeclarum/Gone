@@ -1,7 +1,6 @@
 # Gone
 
 [![Language: F#](https://img.shields.io/badge/language-fsharp-purple.svg)](https://fsharp.org/)
-[![Language: C#](https://img.shields.io/badge/language-csharp-purple.svg)](https://docs.microsoft.com/en-us/dotnet/csharp/)
 [![Language: Go](https://img.shields.io/badge/language-go-blue.svg)](https://golang.org/)
 
 Gone is the [GO](https://golang.org/) compiler for [.NET](https://dotnet.microsoft.com/).
@@ -30,11 +29,7 @@ dotnet build
 
 ### Modifying the Grammar
 
-If you modify [`Parser.jay`](Parser/Parser.jay), then please rebuild the parser with:
 
-```cmd
-make
-```
 
 ### Output
 
@@ -74,3 +69,7 @@ Mostly @praeclarum.
 - [Twitter](https://twitter.com/praeclarum)
 - [Twitch](https://twitch.tv/FrankKrueger)
 - [YouTube](https://www.youtube.com/channel/UCFqpk9svseHIrsvshWSbDag)
+
+## Legacy
+
+- [Legacy](LEGACY.md)

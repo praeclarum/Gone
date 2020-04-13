@@ -4,6 +4,55 @@
 
 - [Twitch](https://twitch.tv/FrankKrueger)
 
+### 12th April 2020
+
+- [Twitch](https://www.twitch.tv/videos/590192968) 3hrs 45mins
+- *Youtube TBA*
+
+Code:
+
+- [Feature Request #9](https://github.com/praeclarum/Gone/issues/9)
+- [PR #10](https://github.com/praeclarum/Gone/pull/10)
+
+Links from the stream:
+
+- [Antlr](https://www.antlr.org)
+
+- [Code Highlighting for fsl fsy](https://marketplace.visualstudio.com/items?itemName=mnxn.fsharp-fsl-fsy)
+
+- [FsLexYacc](https://fsprojects.github.io/FsLexYacc/fslex.html)
+
+- [Ooui.Wasm build.sh](https://gist.github.com/praeclarum/987fad1eb8faea91326a1a6d6c966e29)
+
+- [Fifth Library.fs](https://github.com/garethhubball/Fifth/blob/master/Fifth.Parser/Library.fs)
+
+### 5th April 2020
+
+- [Twitch](https://www.twitch.tv/videos/584106269) 17mins
+- *Youtube TBA*
+- [Twitch](https://www.twitch.tv/videos/584121544) 5hrs
+- *Youtube TBA*
+
+### 4th April 2020
+
+- [Twitch](https://www.twitch.tv/videos/583231477)
+- *Youtube TBA*
+
+### 28th March 2020
+
+- [Twitch](https://www.twitch.tv/videos/577559426) 2hrs
+- *Youtube TBA*
+
+Links from the stream:
+
+- [Functional GUIs with F# - .NET FRINGE Presentation](https://praeclarum.org/2015/04/15/functional-guis.html)
+
+- [Real-World Functional Programming](https://www.manning.com/books/real-world-functional-programming)
+
+- [Ooui](https://github.com/praeclarum/Ooui)
+
+- [Fish Shell](https://fishshell.com)
+
 ### 21st March 2020
 
 - [Twitch](https://www.twitch.tv/videos/572050593)
